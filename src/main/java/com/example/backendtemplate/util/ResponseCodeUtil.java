@@ -1,13 +1,13 @@
 package com.example.backendtemplate.util;
 
-public class ResponseUtil {
+public class ResponseCodeUtil {
     public static final String SUCCESS = "SUCCESS";
     public static final String FAILED = "FAILED";
     public static final String INTERNAL_SERVER_ERROR = "INTERNAL SERVER ERROR";
 
-    public static final int SUCCESS_CODE = 200;
-    public static final int INTERNAL_SERVER_ERROR_CODE = 500;
-    public static final int FAILED_CODE = 400;
+    public static final String SUCCESS_CODE = "0000";
+    public static final String INTERNAL_SERVER_ERROR_CODE = "1010";
+    public static final String FAILED_CODE = "3000";
     public static final String DECRYPTION_FAILED = "2020";
     public static final String MESSAGE_CONTENT_NOT_FOUND = "2025";
     public static final String PARAMETER_MISSING = "2026";

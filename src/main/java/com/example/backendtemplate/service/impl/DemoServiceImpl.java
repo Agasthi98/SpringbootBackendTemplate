@@ -2,7 +2,7 @@ package com.example.backendtemplate.service.impl;
 
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
 import com.example.backendtemplate.service.DemoService;
-import com.example.backendtemplate.util.ResponseUtil;
+import com.example.backendtemplate.util.ResponseCodeUtil;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -18,16 +18,16 @@ public class DemoServiceImpl implements DemoService {
             data.put("name", name);
 
             return BaseDetailsResponse.<HashMap<String, Object>>builder()
-                    .code(ResponseUtil.SUCCESS_CODE)
-                    .title("Success")
+                    .code(ResponseCodeUtil.SUCCESS_CODE)
+                    .title(ResponseCodeUtil.SUCCESS)
                     .message("Name printed successfully")
                     .data(data)
                     .build();
 
         } catch (Exception e) {
             return BaseDetailsResponse.<HashMap<String, Object>>builder()
-                    .code(ResponseUtil.FAILED_CODE)
-                    .title("Failed")
+                    .code(ResponseCodeUtil.FAILED_CODE)
+                    .title(ResponseCodeUtil.FAILED)
                     .message("Failed to print name")
                     .build();
         }

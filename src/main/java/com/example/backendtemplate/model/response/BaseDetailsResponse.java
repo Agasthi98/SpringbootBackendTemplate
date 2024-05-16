@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class BaseDetailsResponse<T> {
-    private int code;
+    private String code;
     private String title;
     private String message;
     private T data;
