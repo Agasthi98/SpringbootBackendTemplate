@@ -3,7 +3,6 @@ package com.example.backendtemplate.controller;
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
 import com.example.backendtemplate.model.response.DefaultResponse;
 import com.example.backendtemplate.service.DemoService;
-import com.example.backendtemplate.util.ResponseCodeUtil;
 import com.example.backendtemplate.util.ReturnResponseUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
