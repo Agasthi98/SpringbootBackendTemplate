@@ -25,17 +25,3 @@ public class DemoController {
         return ReturnResponseUtil.returnResponse(response);
     }
 }
-
-
-/**
- * other way to return response
- */
-/**
- *
-        if (response.getCode() == ResponseCodeUtil.SUCCESS_CODE) {
-            return ResponseEntity.ok(DefaultResponse.success("Success", "Name printed successfully", response.getData()));
-        } else if (response.getCode() == ResponseCodeUtil.INTERNAL_SERVER_ERROR_CODE) {
-            return ResponseEntity.internalServerError().body(DefaultResponse.internalServerError(ResponseCodeUtil.INTERNAL_SERVER_ERROR, response.getMessage()));
-        }
-        return ResponseEntity.badRequest().body(DefaultResponse.error(ResponseCodeUtil.FAILED, response.getMessage()));
- */
