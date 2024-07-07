@@ -10,6 +10,9 @@ public class ValidationUtil {
     public static final String MOBILE_PATTERN_REGEX = "^[0-9]*$";
     public static final String EMAIL_PATTERN_REGEX = "^(.+)@(.+)$";
     public static final String MOBILE_NO_PATTERN_REGEX = "\\d{11}";
+    public static final String USER_PASSWORD_PATTERN_REGEX = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
+    public static final String PHONE_NUMBER_PATTERN_REGEX = "^[0-9]{10}$";
+    public static final String USERNAME_PATTERN_REGEX = "^[a-z0-9]+$";
     public static String getOldNicByNewNic(String newNic) {
         log.info("Given new -> " + newNic);
 //        Eg: 1 9 9 8 - 7 6 5 - 0 4 3 2  1
