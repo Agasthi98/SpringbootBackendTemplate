@@ -1,6 +1,6 @@
 package com.example.backendtemplate.service.impl;
 
-import com.example.backendtemplate.constants.LogMessage;
+import com.example.backendtemplate.util.constants.LogMessage;
 import com.example.backendtemplate.entities.UserEntity;
 import com.example.backendtemplate.model.request.UserRegistrationRequest;
 import com.example.backendtemplate.model.response.BaseDetailsResponse;

@@ -1,7 +1,7 @@
 package com.example.backendtemplate.util;
 
 
-import com.example.backendtemplate.constants.LogMessage;
+import com.example.backendtemplate.util.constants.LogMessage;
 import com.example.backendtemplate.enums.ResponseStatus;
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
 import com.example.backendtemplate.model.response.DefaultResponse;
