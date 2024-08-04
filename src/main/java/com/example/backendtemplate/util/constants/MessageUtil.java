@@ -1,4 +1,4 @@
-package com.example.backendtemplate.constants;
+package com.example.backendtemplate.util.constants;
 
 public class MessageUtil {
 
