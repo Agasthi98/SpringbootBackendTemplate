@@ -16,6 +16,8 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class ReturnResponseUtil {
+    private ReturnResponseUtil() {
+    }
     public static ResponseEntity<DefaultResponse> returnResponse(BaseDetailsResponse<?> commonResponse) {
         if (commonResponse != null) {
             if (commonResponse.getCode().equals(ResponseCodeUtil.SUCCESS_CODE)) {
