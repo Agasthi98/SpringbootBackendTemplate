@@ -1,6 +1,6 @@
-package com.example.backendtemplate.exceptions;
+package com.example.backendtemplate.exception;
 
-import com.example.backendtemplate.constants.LogMessage;
+import com.example.backendtemplate.constants.MessageUtil;
 import com.example.backendtemplate.model.response.DefaultResponse;
 import com.example.backendtemplate.util.ResponseCodeUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -11,20 +11,20 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
-import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import java.util.HashMap;
 import java.util.Map;
 
-@RestControllerAdvice
+@ControllerAdvice
 @Slf4j
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class BadRequestHandler extends ResponseEntityExceptionHandler {
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
-        log.warn(LogMessage.LOG_PREFIX_BAD_REQUEST_HANDLER + LogMessage.INPUT_VALIDATION_ERROR);
+        log.warn("BadRequestHandler-> input validation error");
 
         Map<String, Object> fieldErrors = new HashMap<>();
         for (FieldError error : ex.getBindingResult().getFieldErrors()) {
@@ -34,7 +34,7 @@ public class BadRequestHandler extends ResponseEntityExceptionHandler {
         DefaultResponse thirdPartyDefaultResponse = DefaultResponse.builder()
                 .code(ResponseCodeUtil.INPUT_VALIDATION_ERROR_CODE)
                 .title(ResponseCodeUtil.FAILED)
-                .message("Input validation error")
+                .message(MessageUtil.INPUT_VALIDATION_ERROR)
                 .data(fieldErrors)
                 .build();
 

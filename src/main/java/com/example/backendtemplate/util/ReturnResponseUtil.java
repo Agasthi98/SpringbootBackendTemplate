@@ -22,8 +22,12 @@ public class ReturnResponseUtil {
         if (commonResponse != null) {
             if (commonResponse.getCode().equals(ResponseCodeUtil.SUCCESS_CODE)) {
                 log.info(LogMessage.RETURN_RESPONSE_UTIL, LogMessage.SUCCESS_RESPONSE);
-                return ResponseEntity.ok(DefaultResponse.success(ResponseCodeUtil.SUCCESS, commonResponse.getMessage(), commonResponse.getData()));
 
+                if (commonResponse.getData() == null) {
+                    return ResponseEntity.ok(DefaultResponse.success(ResponseCodeUtil.SUCCESS, commonResponse.getMessage()));
+                } else {
+                    return ResponseEntity.ok(DefaultResponse.success(ResponseCodeUtil.SUCCESS, commonResponse.getMessage(), commonResponse.getData()));
+                }
             } else if (commonResponse.getCode().equals(ResponseCodeUtil.INTERNAL_SERVER_ERROR_CODE)) {
                 log.info(LogMessage.RETURN_RESPONSE_UTIL, LogMessage.INTERNAL_SERVER_ERROR_RESPONSE);
                 return ResponseEntity.internalServerError().body(DefaultResponse.internalServerError(ResponseCodeUtil.INTERNAL_SERVER_ERROR, commonResponse.getMessage()));

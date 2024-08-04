@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <property resource="application.properties"/>
+    <property name="DIRECTORY" value="${app.log.directory}"/>
+    <property name="APP_VERSION" value="${app.version}" />
+
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d | ${APP_VERSION} | %highlight(%-5level) | %logger{36} | %X{req-id} | %msg%n</pattern>
+        </encoder>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.example.backendtemplate.util.MaskingPatternLayout">
+                <maskPattern>\"password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"old_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"new_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"token\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"refresh_token\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"public_key\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"biometric_challenge\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"session_key\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"account_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"sourceAccount\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"destinationAccount\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Ext_Account_No\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Edited_Ext_Account_No\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"to\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Clear_card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"answer\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Channel_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <pattern>%d | ${APP_VERSION} | %highlight(%-5level) | %logger{36} | %X{req-id} | %X{uid} | %msg%n</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <appender name="APP_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DIRECTORY}/today.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${DIRECTORY}/log-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.example.backendtemplate.util.MaskingPatternLayout">
+                <maskPattern>\"password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"old_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"new_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"token\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"refresh_token\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"public_key\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"biometric_challenge\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"session_key\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"account_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"sourceAccount\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"destinationAccount\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Ext_Account_No\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Edited_Ext_Account_No\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"to\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Clear_card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"answer\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Channel_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <pattern>%d | ${APP_VERSION} | %highlight(%-5level) | %logger{36} | %X{req-id} | %X{uid} | %msg%n</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <appender name="API_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DIRECTORY}/api/today.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${DIRECTORY}/api/api-log-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.example.backendtemplate.util.MaskingPatternLayout">
+                <maskPattern>\"password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"old_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"new_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"token\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"refresh_token\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"public_key\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"biometric_challenge\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"session_key\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"account_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"sourceAccount\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"destinationAccount\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Ext_Account_No\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Edited_Ext_Account_No\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"to\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Clear_card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"answer\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Channel_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <!--                <maskPattern>\"address\"\s*:\s*\"(.*?)\"</maskPattern> &lt;!&ndash; Address JSON pattern &ndash;&gt;-->
+                <!--                <maskPattern>(\d+\.\d+\.\d+\.\d+)</maskPattern> &lt;!&ndash; Ip address IPv4 pattern &ndash;&gt;-->
+                <!--                <maskPattern>(\w+@\w+\.\w+)</maskPattern> &lt;!&ndash; Email pattern &ndash;&gt;-->
+                <pattern>%d | ${APP_VERSION} | %highlight(%-5level) | %logger{36} | %X{req-id} | %X{uid} | %msg%n</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <appender name="AUDIT_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${DIRECTORY}/audit/today.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <!-- rollover daily -->
+            <fileNamePattern>${DIRECTORY}/audit/audit-log-%d{yyyy-MM-dd}.%i.log.gz</fileNamePattern>
+            <maxFileSize>50MB</maxFileSize>
+        </rollingPolicy>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="com.example.backendtemplate.util.MaskingPatternLayout">
+                <maskPattern>\"password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"old_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"new_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"token\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"refresh_token\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"public_key\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"biometric_challenge\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"session_key\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"account_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"sourceAccount\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"destinationAccount\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Ext_Account_No\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Edited_Ext_Account_No\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"to\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Clear_card_number\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"answer\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Channel_password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <maskPattern>\"Password\"\s*:\s*\"(.*?)\"</maskPattern>
+                <pattern>%d | ${APP_VERSION} | %highlight(%-5level) | %logger{36} | %X{req-id} | %X{uid} | %msg%n</pattern>
+            </layout>
+        </encoder>
+    </appender>
+
+    <logger name="API_LOG" level="info" additivity="false">
+        <appender-ref ref="API_LOG"/>
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <logger name="AUDIT_LOG" level="info" additivity="false">
+        <appender-ref ref="AUDIT_LOG"/>
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <root level="info">
+        <appender-ref ref="APP_LOG"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+</configuration>

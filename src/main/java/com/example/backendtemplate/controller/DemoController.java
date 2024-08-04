@@ -1,14 +1,14 @@
 package com.example.backendtemplate.controller;
 
+import com.example.backendtemplate.model.request.DemoRequest;
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
 import com.example.backendtemplate.model.response.DefaultResponse;
 import com.example.backendtemplate.service.DemoService;
 import com.example.backendtemplate.util.ReturnResponseUtil;
+import jakarta.validation.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
 
@@ -18,9 +18,9 @@ import java.util.HashMap;
 public class DemoController {
 
     private final DemoService demoService;
-    @GetMapping("/print")
-    public ResponseEntity<DefaultResponse> printName() {
-        BaseDetailsResponse<HashMap<String,Object>> response = demoService.printName();
+    @PostMapping("/print")
+    public ResponseEntity<DefaultResponse> printName(@Valid @RequestBody DemoRequest demoRequest) {
+        BaseDetailsResponse<HashMap<String,Object>> response = demoService.printName(demoRequest);
         return ReturnResponseUtil.returnResponse(response);
     }
 }
