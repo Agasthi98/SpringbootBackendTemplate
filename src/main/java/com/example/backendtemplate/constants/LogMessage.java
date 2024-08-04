@@ -1,4 +1,4 @@
-package com.example.backendtemplate.util.constants;
+package com.example.backendtemplate.constants;
 
 public class LogMessage {
 
