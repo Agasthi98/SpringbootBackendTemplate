@@ -1,6 +1,6 @@
 package com.example.backendtemplate.exception;
 
-import com.example.backendtemplate.constants.MessageUtil;
+import com.example.backendtemplate.util.constants.MessageUtil;
 import com.example.backendtemplate.model.response.DefaultResponse;
 import com.example.backendtemplate.util.ResponseCodeUtil;
 import lombok.extern.slf4j.Slf4j;

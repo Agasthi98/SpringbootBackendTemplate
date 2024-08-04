@@ -1,6 +1,6 @@
 package com.example.backendtemplate.model.request;
 
-import com.example.backendtemplate.constants.MessageUtil;
+import com.example.backendtemplate.util.constants.MessageUtil;
 import com.example.backendtemplate.util.ValidationUtil;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotEmpty;
