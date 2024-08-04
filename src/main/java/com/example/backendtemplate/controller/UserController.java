@@ -1,5 +1,8 @@
 package com.example.backendtemplate.controller;
 
+import com.example.backendtemplate.config.JwtService;
+import com.example.backendtemplate.model.dto.auth.AuthRequestDto;
+import com.example.backendtemplate.model.dto.auth.AuthResponseDto;
 import com.example.backendtemplate.model.request.UserRegistrationRequest;
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
 import com.example.backendtemplate.model.response.DefaultResponse;
@@ -9,6 +12,9 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +29,7 @@ public class UserController {
 
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
-//    private final JwtService jwtService;
+    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<DefaultResponse> userRegistration(@Valid @RequestBody UserRegistrationRequest userRegistrationRequest) {
@@ -31,14 +37,9 @@ public class UserController {
         return ReturnResponseUtil.returnResponse(response);
 
     }
-//    @PostMapping("/api/v1/login")
-//    public AuthResponseDto AuthenticateAndGetToken(@RequestBody AuthRequestDto authRequestDTO){
-//        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authRequestDTO.getUsername(), authRequestDTO.getPassword()));
-//        if(authentication.isAuthenticated()){
-//            return AuthResponseDto.builder()
-//                    .accessToken(jwtService.GenerateToken(authRequestDTO.getUsername())).build();
-//        } else {
-//            throw new UsernameNotFoundException("invalid user request !");
-//        }
-//    }
+    @PostMapping("/login")
+    public AuthResponseDto authenticateAndGetToken(@RequestBody AuthRequestDto authRequestDTO){
+        return AuthResponseDto.builder()
+                .accessToken(jwtService.GenerateToken(authRequestDTO.getUsername())).build();
+    }
 }

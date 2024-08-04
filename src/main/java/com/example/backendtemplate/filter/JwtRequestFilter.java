@@ -83,8 +83,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             generateErrorResponse(response, defaultResponse);
         } finally {
             MDC.remove(AppConstants.MDC_UID_KEY);
-            MDC.remove(AppConstants.MDC_IAM_TOKEN);
-            MDC.remove(AppConstants.MDC_APIM_TOKEN);
         }
 
     }

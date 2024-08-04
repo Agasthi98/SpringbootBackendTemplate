@@ -1,22 +1,32 @@
 package com.example.backendtemplate.entities;
 
 import com.example.backendtemplate.enums.UserStatus;
+import com.example.backendtemplate.util.constants.AppConstants;
+import com.example.backendtemplate.util.constants.EntityNames;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Setter
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "user")
+@Table(name = EntityNames.USER)
 @Builder
 public class UserEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
+    @SequenceGenerator(name = "user_sequence", sequenceName = "user_sequence", allocationSize = 1)
     private Long id;
     private String username;
+    @Builder.Default
+    @Column(unique = true)
+    private String userId = UUID.randomUUID().toString();
     private String fullName;
     private String phoneNumber;
     private String password;
@@ -24,4 +34,6 @@ public class UserEntity {
     private String nic;
     @Builder.Default
     private String status = UserStatus.ACTIVE.name();
+    @ManyToMany(fetch = FetchType.EAGER)
+    private Set<UserRole> roles = new HashSet<>();
 }
