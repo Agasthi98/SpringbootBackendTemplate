@@ -1,7 +1,6 @@
 package com.example.backendtemplate.entities;
 
 import com.example.backendtemplate.enums.UserStatus;
-import com.example.backendtemplate.util.constants.AppConstants;
 import com.example.backendtemplate.util.constants.EntityNames;
 import jakarta.persistence.*;
 import lombok.*;
@@ -17,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = EntityNames.USER)
 @Builder
-public class UserEntity {
+public class User extends BaseEntity{
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")

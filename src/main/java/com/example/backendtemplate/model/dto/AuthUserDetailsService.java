@@ -1,9 +1,8 @@
 package com.example.backendtemplate.model.dto;
 
-import com.example.backendtemplate.entities.UserEntity;
+import com.example.backendtemplate.entities.User;
 import com.example.backendtemplate.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -23,7 +22,7 @@ public class AuthUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        UserEntity user = userRepository.findOneByUsername(username);
+        User user = userRepository.findOneByUsername(username);
         if (ObjectUtils.isEmpty(user)) {
             logWriter.log(Level.SEVERE, () -> "Username not found: " + username);
             throw new UsernameNotFoundException("could not found user !");
@@ -32,8 +31,8 @@ public class AuthUserDetailsService implements UserDetailsService {
         return new CustomUserDetails(user);
     }
 
-    public UserEntity loadUserDetailByUsername(String username) {
-        UserEntity user = userRepository.findOneByUsername(username);
+    public User loadUserDetailByUsername(String username) {
+        User user = userRepository.findOneByUsername(username);
         return user;
     }
 }

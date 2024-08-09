@@ -1,6 +1,6 @@
 package com.example.backendtemplate.model.dto;
 
-import com.example.backendtemplate.entities.UserEntity;
+import com.example.backendtemplate.entities.User;
 import com.example.backendtemplate.entities.UserRole;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -10,9 +10,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class CustomUserDetails extends UserEntity implements UserDetails {
+public class CustomUserDetails extends User implements UserDetails {
 
-    public CustomUserDetails(UserEntity byUsername) {
+    public CustomUserDetails(User byUsername) {
         List<GrantedAuthority> auths = new ArrayList<>();
         for(UserRole role : byUsername.getRoles()){
             auths.add(new SimpleGrantedAuthority(role.getName().toUpperCase()));

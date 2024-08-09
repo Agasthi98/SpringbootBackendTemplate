@@ -4,6 +4,7 @@ import com.example.backendtemplate.config.JwtService;
 import com.example.backendtemplate.model.dto.auth.AuthRequestDto;
 import com.example.backendtemplate.model.dto.auth.AuthResponseDto;
 import com.example.backendtemplate.model.request.UserRegistrationRequest;
+import com.example.backendtemplate.model.request.user.UserLoginRequest;
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
 import com.example.backendtemplate.model.response.DefaultResponse;
 import com.example.backendtemplate.service.UserService;
@@ -38,8 +39,8 @@ public class UserController {
 
     }
     @PostMapping("/login")
-    public AuthResponseDto authenticateAndGetToken(@RequestBody AuthRequestDto authRequestDTO){
-        return AuthResponseDto.builder()
-                .accessToken(jwtService.GenerateToken(authRequestDTO.getUsername())).build();
+    public ResponseEntity<DefaultResponse> authenticateAndGetToken(@RequestBody UserLoginRequest userLoginRequest){
+       BaseDetailsResponse<HashMap<String,Object>> response = userService.login(userLoginRequest);
+       return ReturnResponseUtil.returnResponse(response);
     }
 }
