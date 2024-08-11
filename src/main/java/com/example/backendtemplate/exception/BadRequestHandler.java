@@ -2,7 +2,7 @@ package com.example.backendtemplate.exception;
 
 import com.example.backendtemplate.util.constants.MessageUtil;
 import com.example.backendtemplate.model.response.DefaultResponse;
-import com.example.backendtemplate.util.ResponseCodeUtil;
+import com.example.backendtemplate.util.ResponseUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -32,8 +32,8 @@ public class BadRequestHandler extends ResponseEntityExceptionHandler {
         }
 
         DefaultResponse thirdPartyDefaultResponse = DefaultResponse.builder()
-                .code(ResponseCodeUtil.INPUT_VALIDATION_ERROR_CODE)
-                .title(ResponseCodeUtil.FAILED)
+                .code(ResponseUtil.INPUT_VALIDATION_ERROR_CODE)
+                .title(ResponseUtil.FAILED)
                 .message(MessageUtil.INPUT_VALIDATION_ERROR)
                 .data(fieldErrors)
                 .build();

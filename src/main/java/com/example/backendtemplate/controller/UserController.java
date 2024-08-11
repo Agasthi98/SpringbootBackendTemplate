@@ -1,8 +1,6 @@
 package com.example.backendtemplate.controller;
 
-import com.example.backendtemplate.config.JwtService;
-import com.example.backendtemplate.model.dto.auth.AuthRequestDto;
-import com.example.backendtemplate.model.dto.auth.AuthResponseDto;
+import com.example.backendtemplate.model.dto.auth.JwtService;
 import com.example.backendtemplate.model.request.UserRegistrationRequest;
 import com.example.backendtemplate.model.request.user.UserLoginRequest;
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
@@ -13,9 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

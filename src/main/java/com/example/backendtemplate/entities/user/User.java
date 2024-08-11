@@ -1,13 +1,13 @@
-package com.example.backendtemplate.entities;
+package com.example.backendtemplate.entities.user;
 
+import com.example.backendtemplate.entities.BaseEntity;
 import com.example.backendtemplate.enums.UserStatus;
 import com.example.backendtemplate.util.constants.EntityNames;
 import jakarta.persistence.*;
 import lombok.*;
+import org.springframework.security.core.GrantedAuthority;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 @Entity
 @Setter
@@ -16,7 +16,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = EntityNames.USER)
 @Builder
-public class User extends BaseEntity{
+public class User extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "user_sequence")
@@ -34,5 +34,18 @@ public class User extends BaseEntity{
     @Builder.Default
     private String status = UserStatus.ACTIVE.name();
     @ManyToMany(fetch = FetchType.EAGER)
-    private Set<UserRole> roles = new HashSet<>();
+    @JoinTable(
+            name = "users_roles",
+            joinColumns = @JoinColumn(
+                    name = "user_id", referencedColumnName = "id"),
+            inverseJoinColumns = @JoinColumn(
+                    name = "role_id", referencedColumnName = "id"))
+    @Builder.Default
+    private Collection<Role> roles = new ArrayList<>();
+
+
+    //authenticated user fields
+    @Transient
+    @Builder.Default
+    private Collection<GrantedAuthority> grantedAuthoritiesList = new ArrayList<>();
 }

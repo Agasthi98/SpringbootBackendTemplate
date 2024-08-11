@@ -20,24 +20,24 @@ public class ReturnResponseUtil {
     }
     public static ResponseEntity<DefaultResponse> returnResponse(BaseDetailsResponse<?> commonResponse) {
         if (commonResponse != null) {
-            if (commonResponse.getCode().equals(ResponseCodeUtil.SUCCESS_CODE)) {
+            if (commonResponse.getCode().equals(ResponseUtil.SUCCESS_CODE)) {
                 log.info(LogMessage.RETURN_RESPONSE_UTIL, LogMessage.SUCCESS_RESPONSE);
 
                 if (commonResponse.getData() == null) {
-                    return ResponseEntity.ok(DefaultResponse.success(ResponseCodeUtil.SUCCESS, commonResponse.getMessage()));
+                    return ResponseEntity.ok(DefaultResponse.success(ResponseUtil.SUCCESS, commonResponse.getMessage()));
                 } else {
-                    return ResponseEntity.ok(DefaultResponse.success(ResponseCodeUtil.SUCCESS, commonResponse.getMessage(), commonResponse.getData()));
+                    return ResponseEntity.ok(DefaultResponse.success(ResponseUtil.SUCCESS, commonResponse.getMessage(), commonResponse.getData()));
                 }
-            } else if (commonResponse.getCode().equals(ResponseCodeUtil.INTERNAL_SERVER_ERROR_CODE)) {
+            } else if (commonResponse.getCode().equals(ResponseUtil.INTERNAL_SERVER_ERROR_CODE)) {
                 log.info(LogMessage.RETURN_RESPONSE_UTIL, LogMessage.INTERNAL_SERVER_ERROR_RESPONSE);
-                return ResponseEntity.internalServerError().body(DefaultResponse.internalServerError(ResponseCodeUtil.INTERNAL_SERVER_ERROR, commonResponse.getMessage()));
+                return ResponseEntity.internalServerError().body(DefaultResponse.internalServerError(ResponseUtil.INTERNAL_SERVER_ERROR, commonResponse.getMessage()));
 
             } else {
                 log.info(LogMessage.RETURN_RESPONSE_UTIL, LogMessage.FAILED_RESPONSE);
-                return ResponseEntity.badRequest().body(DefaultResponse.error(ResponseCodeUtil.FAILED, commonResponse.getMessage()));
+                return ResponseEntity.badRequest().body(DefaultResponse.error(ResponseUtil.FAILED, commonResponse.getMessage()));
             }
         }
         log.info(LogMessage.RETURN_RESPONSE_UTIL, LogMessage.FAILED_RESPONSE);
-        return ResponseEntity.badRequest().body(DefaultResponse.error(ResponseCodeUtil.FAILED, ResponseStatus.FAILED.name()));
+        return ResponseEntity.badRequest().body(DefaultResponse.error(ResponseUtil.FAILED, ResponseStatus.FAILED.name()));
     }
 }

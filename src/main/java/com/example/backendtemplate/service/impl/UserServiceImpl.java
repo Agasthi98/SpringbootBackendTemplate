@@ -1,18 +1,16 @@
 package com.example.backendtemplate.service.impl;
 
-import com.example.backendtemplate.config.JwtService;
-import com.example.backendtemplate.model.dto.AuthUserDetailsService;
+import com.example.backendtemplate.model.dto.auth.JwtService;
+import com.example.backendtemplate.model.dto.auth.AuthUserDetailsService;
 import com.example.backendtemplate.model.request.user.UserLoginRequest;
-import com.example.backendtemplate.entities.User;
+import com.example.backendtemplate.entities.user.User;
 import com.example.backendtemplate.model.request.UserRegistrationRequest;
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
 import com.example.backendtemplate.repository.UserRepository;
 import com.example.backendtemplate.service.UserService;
 import com.example.backendtemplate.util.MobileUtility;
-import com.example.backendtemplate.util.ResponseCodeUtil;
-import com.example.backendtemplate.util.constants.AppConstants;
+import com.example.backendtemplate.util.ResponseUtil;
 import com.example.backendtemplate.util.constants.LogMessage;
-import com.example.backendtemplate.util.constants.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -27,7 +25,6 @@ import org.springframework.util.ObjectUtils;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.logging.Level;
 
 @Service
 @Slf4j
@@ -49,8 +46,8 @@ public class UserServiceImpl implements UserService {
             if (!ObjectUtils.isEmpty(userResponse)) {
                 log.warn(LogMessage.USER_ALREADY_EXIST + " by given nic {}", userRegistrationRequest.getNic());
                 return BaseDetailsResponse.<HashMap<String, Object>>builder()
-                        .code(ResponseCodeUtil.FAILED_CODE)
-                        .title(ResponseCodeUtil.FAILED)
+                        .code(ResponseUtil.FAILED_CODE)
+                        .title(ResponseUtil.FAILED)
                         .message(LogMessage.USER_ALREADY_EXIST)
                         .build();
             }
@@ -62,8 +59,8 @@ public class UserServiceImpl implements UserService {
             if (ObjectUtils.isEmpty(user)) {
                 log.error(LogMessage.USER_REGISTRATION_FAILED);
                 return BaseDetailsResponse.<HashMap<String, Object>>builder()
-                        .code(ResponseCodeUtil.FAILED_CODE)
-                        .title(ResponseCodeUtil.FAILED)
+                        .code(ResponseUtil.FAILED_CODE)
+                        .title(ResponseUtil.FAILED)
                         .message(LogMessage.USER_REGISTRATION_FAILED)
                         .build();
             }
@@ -71,8 +68,8 @@ public class UserServiceImpl implements UserService {
             log.info(LogMessage.USER_REGISTRATION_PREFIX + " [end]");
 
             return BaseDetailsResponse.<HashMap<String, Object>>builder()
-                    .code(ResponseCodeUtil.SUCCESS_CODE)
-                    .title(ResponseCodeUtil.SUCCESS)
+                    .code(ResponseUtil.SUCCESS_CODE)
+                    .title(ResponseUtil.SUCCESS)
                     .message(LogMessage.USER_REGISTRATION_SUCCESS)
                     .build();
 
@@ -94,8 +91,8 @@ public class UserServiceImpl implements UserService {
             if (ObjectUtils.isEmpty(user)) {
                 log.error("Invalid Username: " + username);
                 return BaseDetailsResponse.<HashMap<String,Object>>builder()
-                        .code(ResponseCodeUtil.FAILED_CODE)
-                        .title(ResponseCodeUtil.FAILED)
+                        .code(ResponseUtil.FAILED_CODE)
+                        .title(ResponseUtil.FAILED)
                         .message("Invalid Username")
                         .build();
             } else {
@@ -152,8 +149,8 @@ public class UserServiceImpl implements UserService {
 
                 log.error("Invalid Username or Password");
                 return BaseDetailsResponse.<HashMap<String,Object>>builder()
-                        .code(ResponseCodeUtil.FAILED_CODE)
-                        .title(ResponseCodeUtil.FAILED)
+                        .code(ResponseUtil.FAILED_CODE)
+                        .title(ResponseUtil.FAILED)
                         .message("Invalid Username or Password")
                         .build();
             } else {
@@ -161,15 +158,15 @@ public class UserServiceImpl implements UserService {
                 if (duration.getSeconds() < 60) {
                     long remainingSeconds = duration.getSeconds();
                     return BaseDetailsResponse.<HashMap<String,Object>>builder()
-                            .code(ResponseCodeUtil.FAILED_CODE)
-                            .title(ResponseCodeUtil.FAILED)
+                            .code(ResponseUtil.FAILED_CODE)
+                            .title(ResponseUtil.FAILED)
                             .message("Login attempts exceeded, try again after " + remainingSeconds + " seconds..")
                             .build();
                 } else {
 
                     return BaseDetailsResponse.<HashMap<String,Object>>builder()
-                            .code(ResponseCodeUtil.FAILED_CODE)
-                            .title(ResponseCodeUtil.FAILED)
+                            .code(ResponseUtil.FAILED_CODE)
+                            .title(ResponseUtil.FAILED)
                             .message("Login attempts exceeded, try again after " + minutes + " minutes..")
                             .build();
                 }
@@ -187,20 +184,20 @@ public class UserServiceImpl implements UserService {
         /**
          * Generate JWT token
          */
-        String token = jwtService.generateToken(userDetails);
+//        String token = jwtService.createJwtToken(userDetails);
 
         /**
          * Generate Refresh token
          */
-        String refreshToken = jwtService.generateRefreshToken(userDetails);
+//        String refreshToken = jwtService.generateRefreshToken(userDetails);
 
         HashMap<String, Object> data = new HashMap<>();
-        data.put("token", token);
-        data.put("refreshToken", refreshToken);
+//        data.put("token", token);
+//        data.put("refreshToken", refreshToken);
 
         return BaseDetailsResponse.<HashMap<String,Object>>builder()
-                .code(ResponseCodeUtil.SUCCESS_CODE)
-                .title(ResponseCodeUtil.SUCCESS)
+                .code(ResponseUtil.SUCCESS_CODE)
+                .title(ResponseUtil.SUCCESS)
                 .message("Login Successful")
                 .data(data)
                 .build();

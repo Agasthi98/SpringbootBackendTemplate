@@ -3,9 +3,8 @@ package com.example.backendtemplate.exception;
 import lombok.Getter;
 
 @Getter
-public class UserDisabledException extends Exception {
-    private final String message;
+public class UserDisabledException extends RuntimeException {
     public UserDisabledException(String message) {
-        this.message = message;
+        super(message);
     }
 }

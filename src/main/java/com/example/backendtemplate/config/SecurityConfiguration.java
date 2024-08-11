@@ -1,6 +1,6 @@
 package com.example.backendtemplate.config;
 
-import com.example.backendtemplate.model.dto.AuthUserDetailsService;
+import com.example.backendtemplate.model.dto.auth.AuthUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

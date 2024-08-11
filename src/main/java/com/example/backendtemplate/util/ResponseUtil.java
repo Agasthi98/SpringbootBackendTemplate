@@ -1,9 +1,9 @@
 package com.example.backendtemplate.util;
 
 
-public class ResponseCodeUtil {
+public class ResponseUtil {
 
-    private ResponseCodeUtil(){
+    private ResponseUtil(){
         throw new IllegalStateException("Utility class");
     }
 
@@ -48,4 +48,13 @@ public class ResponseCodeUtil {
     public static final String MISSING_OTP = "5000";
     public static final String OTP_EXPIRED = "5050";
     public static final String EMPTY_PARAMETER = "5080";
+
+    //for jwt token
+    public static final String JWT_TOKEN_VALIDATE_ERROR_CODE = "4000";
+    public static final String JWT_TOKEN_EXPIRED_ERROR_CODE = "4001";
+    public static final String INVALID_TOKEN_ERROR_CODE = "4002";
+    public static final String DEVICE_ID_MISMATCH_ERROR_CODE = "402";
+    public static final String INVALID_CREDENTIAL = "Invalid credentials.";
+    public static final String USER_ALREADY_LOGGED_IN_ANOTHER_DEVICE = "User already logged in another device..";
+
 }
