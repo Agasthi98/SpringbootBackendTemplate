@@ -13,6 +13,7 @@ import com.example.backendtemplate.model.response.DefaultResponse;
 import com.example.backendtemplate.repository.UserRepository;
 import com.example.backendtemplate.util.ResponseUtil;
 import com.example.backendtemplate.util.constants.AppConstants;
+import com.example.backendtemplate.util.constants.LogMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
@@ -105,45 +106,66 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     // Reads the JWT from the Authorization header, and then uses JWT to validate the token
     public UsernamePasswordAuthenticationToken getAuthentication(String token, HttpServletRequest request) {
-        String logPrefix = "JWTRequestFilter:[doFilterInternal] -> ";
+        validateTokenPresence(token);
+        String username = getUsernameFromToken(token);
+        UserDetails userDetails = loadUserDetails(username);
+
+        validateUser(userDetails, token, request);
+
+        return buildAuthenticationToken(userDetails, request);
+    }
+
+    private void validateTokenPresence(String token) {
         if (token == null) {
-            logWriter.log(Level.WARNING, () -> logPrefix + "Token not found");
+            logWriter.log(Level.WARNING, () -> LogMessage.REQUEST_FILTER_PREFIX + "Token not found");
             throw new JWTVerificationException("Token not found");
-        }else {
-            logWriter.info(() -> logPrefix + "Token found");
-            // parse the token.
-            String username = JWT.require(getSecretKey).build().verify(token.replace("Bearer ", "")).getSubject();
-
-            if (username == null) {
-                logWriter.log(Level.WARNING, () -> logPrefix + "Username not found");
-                throw new JWTVerificationException("Username not found");
-            }else{
-                UserDetails userDetails = authUserDetailsService.loadUserByUsername(username);
-                UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
-
-                usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-                User user = userRepository.findOneByUsername(username);
-                if (user != null) {
-                    if (user.getStatus().equals(Status.DISABLED.name())) {
-                        logWriter.log(Level.WARNING, () -> "User disabled.");
-                        throw new UserDisabledException("User disabled");
-                    }
-
-                    if (tokenBlackListService.isTokenExist(token.replace("Bearer ", ""))) {
-                        logWriter.log(Level.WARNING, () -> logPrefix + "Token was blacklisted");
-                        throw new TokenExpiredException("The token was expired", Instant.now());
-                    }
-
-                    request.setAttribute("user", user);
-                    MDC.put(MDC_UID_KEY, user.getUsername());
-                } else {
-                    logWriter.log(Level.WARNING, () -> logPrefix + "user not found given username");
-                    throw new UserNotFoundException("user not found given username");
-                }
-                return usernamePasswordAuthenticationToken;
-
-            }
+        } else {
+            logWriter.info(() -> LogMessage.REQUEST_FILTER_PREFIX + "Token found");
         }
+    }
+
+    private String getUsernameFromToken(String token) {
+        String username = JWT.require(getSecretKey).build().verify(token.replace(AppConstants.BEARER, "")).getSubject();
+
+        if (username == null) {
+            logWriter.log(Level.WARNING, () -> LogMessage.REQUEST_FILTER_PREFIX + "Username not found");
+            throw new JWTVerificationException("Username not found");
+        }
+        logWriter.log(Level.INFO, () -> LogMessage.REQUEST_FILTER_PREFIX + "Username found: " + username);
+        return username;
+    }
+
+    private UserDetails loadUserDetails(String username) {
+        logWriter.log(Level.INFO, () -> LogMessage.REQUEST_FILTER_PREFIX + "Loading user details for username: " + username);
+        return authUserDetailsService.loadUserByUsername(username);
+    }
+
+    private void validateUser(UserDetails userDetails, String token, HttpServletRequest request) {
+        User user = userRepository.findOneByUsername(userDetails.getUsername());
+
+        if (user == null) {
+            logWriter.log(Level.WARNING, () -> LogMessage.REQUEST_FILTER_PREFIX + "User not found for given username");
+            throw new UserNotFoundException("User not found for given username");
+        }
+
+        if (user.getStatus().equals(Status.DISABLED.name())) {
+            logWriter.log(Level.WARNING, () -> LogMessage.REQUEST_FILTER_PREFIX + "User disabled.");
+            throw new UserDisabledException("User disabled");
+        }
+
+        if (tokenBlackListService.isTokenExist(token.replace(AppConstants.BEARER, ""))) {
+            logWriter.log(Level.WARNING, () -> LogMessage.REQUEST_FILTER_PREFIX + "Token was blacklisted");
+            throw new TokenExpiredException("The token was expired", Instant.now());
+        }
+
+        request.setAttribute("user", user);
+        MDC.put(MDC_UID_KEY, user.getUsername());
+    }
+
+    private UsernamePasswordAuthenticationToken buildAuthenticationToken(UserDetails userDetails, HttpServletRequest request) {
+        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        return authenticationToken;
     }
 
 

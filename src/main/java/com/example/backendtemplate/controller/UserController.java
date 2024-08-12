@@ -1,5 +1,6 @@
 package com.example.backendtemplate.controller;
 
+import com.example.backendtemplate.model.dto.auth.AuthResponseDto;
 import com.example.backendtemplate.model.dto.auth.JwtService;
 import com.example.backendtemplate.model.request.UserRegistrationRequest;
 import com.example.backendtemplate.model.request.user.UserLoginRequest;
@@ -35,7 +36,7 @@ public class UserController {
     }
     @PostMapping("/login")
     public ResponseEntity<DefaultResponse> authenticateAndGetToken(@RequestBody UserLoginRequest userLoginRequest){
-       BaseDetailsResponse<HashMap<String,Object>> response = userService.login(userLoginRequest);
+       BaseDetailsResponse<AuthResponseDto> response = userService.login(userLoginRequest);
        return ReturnResponseUtil.returnResponse(response);
     }
 }

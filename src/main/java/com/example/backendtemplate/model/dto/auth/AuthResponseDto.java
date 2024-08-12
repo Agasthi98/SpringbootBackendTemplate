@@ -9,6 +9,7 @@ import lombok.Setter;
 @Getter
 @Builder
 public class AuthResponseDto {
-    @JsonProperty("access_token")
-    private String accessToken;
+    private String token;
+    @JsonProperty("refresh_token")
+    private String refreshToken;
 }

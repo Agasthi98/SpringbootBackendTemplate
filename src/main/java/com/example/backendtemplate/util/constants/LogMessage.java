@@ -13,6 +13,7 @@ public class LogMessage {
     public static final String USER_REGISTRATION_FAILED = "User registration failed -> {}";
     public static final String USER_REGISTRATION_SUCCESS = "User registration success -> {}";
     public static final String USER = "User -> {}";
+    public static final String REQUEST_FILTER_PREFIX = "JWTRequestFilter:[doFilterInternal] -> ";
 
     public static final String LOG_PREFIX_BAD_REQUEST_HANDLER = "BadRequestHandler -> {}";
 

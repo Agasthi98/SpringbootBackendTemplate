@@ -1,5 +1,6 @@
 package com.example.backendtemplate.service.impl;
 
+import com.example.backendtemplate.model.dto.auth.AuthResponseDto;
 import com.example.backendtemplate.model.dto.auth.JwtService;
 import com.example.backendtemplate.model.dto.auth.AuthUserDetailsService;
 import com.example.backendtemplate.model.dto.auth.TokenRequest;
@@ -81,7 +82,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BaseDetailsResponse<HashMap<String, Object>> login(UserLoginRequest userLoginRequest) {
+    public BaseDetailsResponse<AuthResponseDto> login(UserLoginRequest userLoginRequest) {
         try {
             log.info(LogMessage.USER + " login" + " [start]");
             final String username = userLoginRequest.getUsername();
@@ -91,7 +92,7 @@ public class UserServiceImpl implements UserService {
 
             if (ObjectUtils.isEmpty(user)) {
                 log.error("Invalid Username: {}", username);
-                return BaseDetailsResponse.<HashMap<String, Object>>builder()
+                return BaseDetailsResponse.<AuthResponseDto>builder()
                         .code(ResponseUtil.FAILED_CODE)
                         .title(ResponseUtil.FAILED)
                         .message("Invalid Username")
@@ -126,7 +127,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    public BaseDetailsResponse<HashMap<String, Object>> logUser(String username, String password, User user) {
+    public BaseDetailsResponse<AuthResponseDto> logUser(String username, String password, User user) {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime resetTime = user.getUpdatedDateTime().plusMinutes(5);
         Duration duration = Duration.between(currentTime, resetTime);
@@ -149,7 +150,7 @@ public class UserServiceImpl implements UserService {
                 userRepository.save(user);
 
                 log.error("Invalid Username or Password");
-                return BaseDetailsResponse.<HashMap<String, Object>>builder()
+                return BaseDetailsResponse.<AuthResponseDto>builder()
                         .code(ResponseUtil.FAILED_CODE)
                         .title(ResponseUtil.FAILED)
                         .message("Invalid Username or Password")
@@ -158,14 +159,14 @@ public class UserServiceImpl implements UserService {
                 log.warn("login attempts exceeded, Try again after 5 minutes..");
                 if (duration.getSeconds() < 60) {
                     long remainingSeconds = duration.getSeconds();
-                    return BaseDetailsResponse.<HashMap<String, Object>>builder()
+                    return BaseDetailsResponse.<AuthResponseDto>builder()
                             .code(ResponseUtil.FAILED_CODE)
                             .title(ResponseUtil.FAILED)
                             .message("Login attempts exceeded, try again after " + remainingSeconds + " seconds..")
                             .build();
                 } else {
 
-                    return BaseDetailsResponse.<HashMap<String, Object>>builder()
+                    return BaseDetailsResponse.<AuthResponseDto>builder()
                             .code(ResponseUtil.FAILED_CODE)
                             .title(ResponseUtil.FAILED)
                             .message("Login attempts exceeded, try again after " + minutes + " minutes..")
@@ -185,28 +186,23 @@ public class UserServiceImpl implements UserService {
                 .role(user.getUsername())
                 .build();
 
-//        String token = jwtUtil.createJwtToken(tokenRequest);
-//        String refreshToken = jwtUtil.createRefreshToken(tokenRequest);
-
-        /**
-         * Generate JWT token
-         */
+        // Generate JWT token
         String token = jwtService.createJwtToken(tokenRequest);
 
-        /**
-         * Generate Refresh token
-         */
+        //Generate Refresh token
         String refreshToken = jwtService.createRefreshToken(tokenRequest);
 
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("token", token);
-        data.put("refreshToken", refreshToken);
+        //Build login response
+        AuthResponseDto authResponseDto = AuthResponseDto.builder()
+                .token(token)
+                .refreshToken(refreshToken)
+                .build();
 
-        return BaseDetailsResponse.<HashMap<String, Object>>builder()
+        return BaseDetailsResponse.<AuthResponseDto>builder()
                 .code(ResponseUtil.SUCCESS_CODE)
                 .title(ResponseUtil.SUCCESS)
                 .message("Login Successful")
-                .data(data)
+                .data(authResponseDto)
                 .build();
 
     }
