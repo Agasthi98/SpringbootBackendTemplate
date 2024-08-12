@@ -13,6 +13,7 @@ import com.example.backendtemplate.service.UserService;
 import com.example.backendtemplate.util.MobileUtility;
 import com.example.backendtemplate.util.ResponseUtil;
 import com.example.backendtemplate.util.constants.LogMessage;
+import com.example.backendtemplate.util.constants.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -62,7 +63,7 @@ public class UserServiceImpl implements UserService {
                 return BaseDetailsResponse.<HashMap<String, Object>>builder()
                         .code(ResponseUtil.FAILED_CODE)
                         .title(ResponseUtil.FAILED)
-                        .message(LogMessage.USER_REGISTRATION_FAILED)
+                        .message(MessageUtil.USER_REGISTRATION_FAILED_MSG)
                         .build();
             }
             log.info(LogMessage.USER_REGISTRATION_SUCCESS);
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService {
             return BaseDetailsResponse.<HashMap<String, Object>>builder()
                     .code(ResponseUtil.SUCCESS_CODE)
                     .title(ResponseUtil.SUCCESS)
-                    .message(LogMessage.USER_REGISTRATION_SUCCESS)
+                    .message(MessageUtil.USER_REGISTRATION_SUCCESS_MSG)
                     .build();
 
         } catch (Exception e) {

@@ -23,7 +23,7 @@ public class ReturnResponseUtil {
             if (commonResponse.getCode().equals(ResponseUtil.SUCCESS_CODE)) {
                 log.info(LogMessage.RETURN_RESPONSE_UTIL, LogMessage.SUCCESS_RESPONSE);
 
-                if (commonResponse.getData() == null) {
+                if (commonResponse.getData() == null || commonResponse.getData().toString().isEmpty()) {
                     return ResponseEntity.ok(DefaultResponse.success(ResponseUtil.SUCCESS, commonResponse.getMessage()));
                 } else {
                     return ResponseEntity.ok(DefaultResponse.success(ResponseUtil.SUCCESS, commonResponse.getMessage(), commonResponse.getData()));
