@@ -1,4 +1,4 @@
-package com.example.backendtemplate.model.request;
+package com.example.backendtemplate.model.request.user;
 
 import com.example.backendtemplate.util.constants.MessageUtil;
 import com.example.backendtemplate.util.ValidationUtil;
