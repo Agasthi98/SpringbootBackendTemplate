@@ -2,6 +2,7 @@ package com.example.backendtemplate.service.impl;
 
 import com.example.backendtemplate.model.dto.auth.JwtService;
 import com.example.backendtemplate.model.dto.auth.AuthUserDetailsService;
+import com.example.backendtemplate.model.dto.auth.TokenRequest;
 import com.example.backendtemplate.model.request.user.UserLoginRequest;
 import com.example.backendtemplate.entities.user.User;
 import com.example.backendtemplate.model.request.UserRegistrationRequest;
@@ -39,7 +40,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseDetailsResponse<HashMap<String, Object>> userRegistration(UserRegistrationRequest userRegistrationRequest) {
         try {
-            log.info(LogMessage.USER +" registration" + " [start]");
+            log.info(LogMessage.USER + " registration" + " [start]");
 
             User userResponse = userRepository.findByNic(userRegistrationRequest.getNic());
 
@@ -82,15 +83,15 @@ public class UserServiceImpl implements UserService {
     @Override
     public BaseDetailsResponse<HashMap<String, Object>> login(UserLoginRequest userLoginRequest) {
         try {
-            log.info(LogMessage.USER+ " login" + " [start]");
+            log.info(LogMessage.USER + " login" + " [start]");
             final String username = userLoginRequest.getUsername();
             final String password = userLoginRequest.getPassword();
 
             User user = userRepository.findOneByUsername(username);
 
             if (ObjectUtils.isEmpty(user)) {
-                log.error("Invalid Username: " + username);
-                return BaseDetailsResponse.<HashMap<String,Object>>builder()
+                log.error("Invalid Username: {}", username);
+                return BaseDetailsResponse.<HashMap<String, Object>>builder()
                         .code(ResponseUtil.FAILED_CODE)
                         .title(ResponseUtil.FAILED)
                         .message("Invalid Username")
@@ -100,7 +101,7 @@ public class UserServiceImpl implements UserService {
             }
 
         } catch (Exception e) {
-            log.error(LogMessage.USER + " login" + " with error {}", e.getMessage() + e);
+            log.error(LogMessage.USER, e, " login" + " with error {}", e.getMessage());
             return null;
         }
     }
@@ -125,7 +126,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    public BaseDetailsResponse<HashMap<String,Object>> logUser(String username, String password, User user) {
+    public BaseDetailsResponse<HashMap<String, Object>> logUser(String username, String password, User user) {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime resetTime = user.getUpdatedDateTime().plusMinutes(5);
         Duration duration = Duration.between(currentTime, resetTime);
@@ -148,7 +149,7 @@ public class UserServiceImpl implements UserService {
                 userRepository.save(user);
 
                 log.error("Invalid Username or Password");
-                return BaseDetailsResponse.<HashMap<String,Object>>builder()
+                return BaseDetailsResponse.<HashMap<String, Object>>builder()
                         .code(ResponseUtil.FAILED_CODE)
                         .title(ResponseUtil.FAILED)
                         .message("Invalid Username or Password")
@@ -157,14 +158,14 @@ public class UserServiceImpl implements UserService {
                 log.warn("login attempts exceeded, Try again after 5 minutes..");
                 if (duration.getSeconds() < 60) {
                     long remainingSeconds = duration.getSeconds();
-                    return BaseDetailsResponse.<HashMap<String,Object>>builder()
+                    return BaseDetailsResponse.<HashMap<String, Object>>builder()
                             .code(ResponseUtil.FAILED_CODE)
                             .title(ResponseUtil.FAILED)
                             .message("Login attempts exceeded, try again after " + remainingSeconds + " seconds..")
                             .build();
                 } else {
 
-                    return BaseDetailsResponse.<HashMap<String,Object>>builder()
+                    return BaseDetailsResponse.<HashMap<String, Object>>builder()
                             .code(ResponseUtil.FAILED_CODE)
                             .title(ResponseUtil.FAILED)
                             .message("Login attempts exceeded, try again after " + minutes + " minutes..")
@@ -173,29 +174,35 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-
         /**
          * Reset the login attempts & update record
          */
         user.setLoginAttempts(0);
         userRepository.save(user);
 
+        TokenRequest tokenRequest = TokenRequest.builder()
+                .username(user.getUsername())
+                .role(user.getUsername())
+                .build();
+
+//        String token = jwtUtil.createJwtToken(tokenRequest);
+//        String refreshToken = jwtUtil.createRefreshToken(tokenRequest);
+
         /**
          * Generate JWT token
          */
-//        String token = jwtService.createJwtToken(userDetails);
+        String token = jwtService.createJwtToken(tokenRequest);
 
         /**
          * Generate Refresh token
          */
-//        String refreshToken = jwtService.generateRefreshToken(userDetails);
+        String refreshToken = jwtService.createRefreshToken(tokenRequest);
 
         HashMap<String, Object> data = new HashMap<>();
-//        data.put("token", token);
-//        data.put("refreshToken", refreshToken);
+        data.put("token", token);
+        data.put("refreshToken", refreshToken);
 
-        return BaseDetailsResponse.<HashMap<String,Object>>builder()
+        return BaseDetailsResponse.<HashMap<String, Object>>builder()
                 .code(ResponseUtil.SUCCESS_CODE)
                 .title(ResponseUtil.SUCCESS)
                 .message("Login Successful")

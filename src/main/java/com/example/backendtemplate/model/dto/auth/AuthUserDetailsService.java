@@ -1,6 +1,5 @@
 package com.example.backendtemplate.model.dto.auth;
 
-import com.example.backendtemplate.entities.user.AuthUser;
 import com.example.backendtemplate.entities.user.Role;
 import com.example.backendtemplate.entities.user.User;
 import com.example.backendtemplate.repository.RoleRepository;

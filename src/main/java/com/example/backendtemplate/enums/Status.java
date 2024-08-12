@@ -1,6 +1,6 @@
 package com.example.backendtemplate.enums;
 
-public enum UserStatus {
+public enum Status {
     ACTIVE,
     INACTIVE,
     LOCKED,

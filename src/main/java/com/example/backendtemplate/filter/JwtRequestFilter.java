@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.*;
 import com.example.backendtemplate.entities.user.User;
-import com.example.backendtemplate.enums.UserStatus;
+import com.example.backendtemplate.enums.Status;
 import com.example.backendtemplate.exception.UserDisabledException;
 import com.example.backendtemplate.exception.UserNotFoundException;
 import com.example.backendtemplate.model.dto.auth.AuthUserDetailsService;
@@ -124,7 +124,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
                 usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 User user = userRepository.findOneByUsername(username);
                 if (user != null) {
-                    if (user.getStatus().equals(UserStatus.DISABLED.name())) {
+                    if (user.getStatus().equals(Status.DISABLED.name())) {
                         logWriter.log(Level.WARNING, () -> "User disabled.");
                         throw new UserDisabledException("User disabled");
                     }

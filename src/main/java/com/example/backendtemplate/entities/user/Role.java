@@ -1,5 +1,6 @@
 package com.example.backendtemplate.entities.user;
 
+import com.example.backendtemplate.enums.Status;
 import com.example.backendtemplate.util.constants.EntityNames;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
@@ -24,7 +25,9 @@ public class Role {
     @ManyToMany(mappedBy = "roles", fetch = FetchType.LAZY)
     @JsonIgnore
     @Builder.Default
-    private Collection<User> appUsers = new ArrayList<>();
+    private Collection<User> users = new ArrayList<>();
+    @Builder.Default
+    private String status = Status.ACTIVE.name();
 
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(

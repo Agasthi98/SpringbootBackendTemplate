@@ -1,7 +1,7 @@
 package com.example.backendtemplate.entities.user;
 
 import com.example.backendtemplate.entities.BaseEntity;
-import com.example.backendtemplate.enums.UserStatus;
+import com.example.backendtemplate.enums.Status;
 import com.example.backendtemplate.util.constants.EntityNames;
 import jakarta.persistence.*;
 import lombok.*;
@@ -32,7 +32,7 @@ public class User extends BaseEntity {
     private int loginAttempts = 0;
     private String nic;
     @Builder.Default
-    private String status = UserStatus.ACTIVE.name();
+    private String status = Status.ACTIVE.name();
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
