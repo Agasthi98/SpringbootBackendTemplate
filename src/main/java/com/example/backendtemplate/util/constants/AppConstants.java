@@ -1,6 +1,7 @@
 package com.example.backendtemplate.util.constants;
 
 public class AppConstants {
+    private AppConstants(){}
     public static final String APP_LOG = "APP_LOG";
     public static final String FAILED_TITLE = "failed";
     public static final String INVALID_CREDENTIALS = "invalid credentials";

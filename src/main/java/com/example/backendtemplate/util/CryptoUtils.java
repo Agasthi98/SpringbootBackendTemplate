@@ -10,6 +10,9 @@ import java.security.NoSuchAlgorithmException;
 @Slf4j
 public class CryptoUtils {
 
+    private CryptoUtils() {
+    }
+
     public static String hashOTP(String otp) {
         String encryptedOTP = "";
         try {
