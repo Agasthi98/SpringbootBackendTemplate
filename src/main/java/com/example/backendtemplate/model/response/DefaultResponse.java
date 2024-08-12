@@ -1,6 +1,6 @@
 package com.example.backendtemplate.model.response;
 
-import com.example.backendtemplate.util.ResponseCodeUtil;
+import com.example.backendtemplate.util.ResponseUtil;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -34,26 +34,26 @@ public class DefaultResponse {
     }
 
     public static DefaultResponse success(String title, String message, Object data) {
-        return new DefaultResponse(ResponseCodeUtil.SUCCESS_CODE, title, message, data);
+        return new DefaultResponse(ResponseUtil.SUCCESS_CODE, title, message, data);
     }
 
     public static DefaultResponse success(String title, String message) {
-        return new DefaultResponse(ResponseCodeUtil.SUCCESS_CODE, title, message, new HashMap<String, Object>());
+        return new DefaultResponse(ResponseUtil.SUCCESS_CODE, title, message, new HashMap<String, Object>());
     }
 
     public static DefaultResponse error(String title, String message, Object data) {
-        return new DefaultResponse(ResponseCodeUtil.FAILED_CODE, title, message, data);
+        return new DefaultResponse(ResponseUtil.FAILED_CODE, title, message, data);
     }
 
     public static DefaultResponse error(String title, String message) {
-        return new DefaultResponse(ResponseCodeUtil.FAILED_CODE, title, message, new HashMap<String, Object>());
+        return new DefaultResponse(ResponseUtil.FAILED_CODE, title, message, new HashMap<String, Object>());
     }
 
     public static DefaultResponse internalServerError(String title, String message, Object data) {
-        return new DefaultResponse(ResponseCodeUtil.INTERNAL_SERVER_ERROR_CODE, title, message, data);
+        return new DefaultResponse(ResponseUtil.INTERNAL_SERVER_ERROR_CODE, title, message, data);
     }
 
     public static DefaultResponse internalServerError(String title, String message) {
-        return new DefaultResponse(ResponseCodeUtil.INTERNAL_SERVER_ERROR_CODE, title, message, new HashMap<String, Object>());
+        return new DefaultResponse(ResponseUtil.INTERNAL_SERVER_ERROR_CODE, title, message, new HashMap<String, Object>());
     }
 }

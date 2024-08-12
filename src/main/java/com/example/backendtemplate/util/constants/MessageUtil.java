@@ -10,4 +10,9 @@ public class MessageUtil {
     public static final String PHONE_NUMBER_VALIDATION_MESSAGE = "Phone number must be exactly 10 digits.";
     public static final String NIC_VALIDATION_MESSAGE = "NIC must be either 8 digits followed by 'V' or 12 digits.";
     public static final String USERNAME_VALIDATION_MESSAGE = "Username cannot have spaces or capital letters.";
+    public static final String LOGIN_ATTEMPTS_EXCEEDED_MESSAGE = "LoginAttemptsExceeded";
+
+    //Auth
+    public static final String USER_REGISTRATION_SUCCESS_MSG = "User registration successful";
+    public static final String USER_REGISTRATION_FAILED_MSG = "User registration failed!";
 }
