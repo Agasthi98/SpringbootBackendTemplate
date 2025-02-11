@@ -26,6 +26,11 @@ public class ResourceServiceImpl implements ResourceService {
     private String uploadDir;
 
 
+    /**
+     * Save the uploaded image to the file system.
+     * @param file
+     * @return
+     */
     @Override
     public BaseDetailsResponse<String> saveImage(MultipartFile file) {
         try {
@@ -108,6 +113,11 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
 
+    /**
+     * Get the image from the file system.
+     * @param filename
+     * @return
+     */
     @Override
     public BaseDetailsResponse<Resource> getImage(String filename) {
         try {
@@ -140,6 +150,11 @@ public class ResourceServiceImpl implements ResourceService {
         }
     }
 
+    /**
+     * Download the image from the file system.
+     * @param filename
+     * @return
+     */
     @Override
     public BaseDetailsResponse<Resource> downloadImage(String filename) {
         try {
