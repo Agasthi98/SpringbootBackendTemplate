@@ -7,9 +7,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -151,8 +148,7 @@ public class ResourceServiceImpl implements ResourceService {
             Path filePath = Paths.get(uploadDir).resolve(filename).normalize();
             if (!Files.exists(filePath)) {
                 log.error("File not found: {}", filePath);
-//                return ResponseEntity.status(HttpStatus.NOT_FOUND)
-//                        .body(null);
+
                 return BaseDetailsResponse.<Resource>builder()
                         .code(ResponseUtil.FAILED_CODE)
                         .title(ResponseUtil.FAILED)
@@ -161,15 +157,6 @@ public class ResourceServiceImpl implements ResourceService {
             }
 
             Resource resource = new UrlResource(filePath.toUri());
-            String contentType = Files.probeContentType(filePath);
-//            if (contentType == null) {
-//                contentType = "application/octet-stream";
-//            }
-
-//            return ResponseEntity.ok()
-//                    .contentType(MediaType.parseMediaType(contentType))
-//                    .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
-//                    .body(resource);
             return BaseDetailsResponse.<Resource>builder()
                     .code(ResponseUtil.SUCCESS_CODE)
                     .title(ResponseUtil.SUCCESS)
