@@ -8,6 +8,7 @@ import com.example.backendtemplate.model.request.user.UserLoginRequest;
 import com.example.backendtemplate.entities.user.User;
 import com.example.backendtemplate.model.request.user.UserRegistrationRequest;
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
+import com.example.backendtemplate.model.response.SignOutResponse;
 import com.example.backendtemplate.repository.UserRepository;
 import com.example.backendtemplate.service.UserService;
 import com.example.backendtemplate.util.MobileUtility;
@@ -27,6 +28,7 @@ import org.springframework.util.ObjectUtils;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -88,21 +90,51 @@ public class UserServiceImpl implements UserService {
             final String username = userLoginRequest.getUsername();
             final String password = userLoginRequest.getPassword();
 
-            User user = userRepository.findOneByUsername(username);
+            User user = findUser(username);
 
-            if (ObjectUtils.isEmpty(user)) {
-                log.error("Invalid Username: {}", username);
-                return BaseDetailsResponse.<AuthResponseDto>builder()
-                        .code(ResponseUtil.FAILED_CODE)
-                        .title(ResponseUtil.FAILED)
-                        .message("Invalid Username")
-                        .build();
-            } else {
-                return logUser(username, password, user);
-            }
+            return logUser(username, password, user);
 
+
+        } catch (NullPointerException e) {
+            log.error("{} login process with error: {}", LogMessage.USER, LogMessage.CAN_NOT_FIND_USER);
+            return BaseDetailsResponse.<AuthResponseDto>builder()
+                    .code(ResponseUtil.FAILED_CODE)
+                    .title(ResponseUtil.FAILED)
+                    .message("Invalid Username")
+                    .build();
         } catch (Exception e) {
             log.error(LogMessage.USER, e, " login" + " with error {}", e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public BaseDetailsResponse<SignOutResponse> signOut(String token) {
+        log.info(LogMessage.USER + " Sign out" + " [start]");
+        try {
+            User user = findUser(token);
+
+            user.setTokenReference(null);
+            userRepository.save(user);
+
+            log.info("{} Sign out [end]", LogMessage.USER);
+            return BaseDetailsResponse.<SignOutResponse>builder()
+                    .code(ResponseUtil.SUCCESS_CODE)
+                    .title(ResponseUtil.SUCCESS)
+                    .message("Sign out successful")
+                    .data(SignOutResponse.builder().isSignOut(true).build())
+                    .build();
+
+        }catch (NullPointerException e){
+            log.error("{} sign out process with error: {}", LogMessage.USER, LogMessage.CAN_NOT_FIND_USER);
+            return BaseDetailsResponse.<SignOutResponse>builder()
+                    .code(ResponseUtil.FAILED_CODE)
+                    .title(ResponseUtil.FAILED)
+                    .message("Invalid Username")
+                    .data(SignOutResponse.builder().isSignOut(false).build())
+                    .build();
+        }catch (Exception e){
+            log.error(LogMessage.USER, e, " sign out" + " with error {}", e.getMessage());
             return null;
         }
     }
@@ -179,24 +211,28 @@ public class UserServiceImpl implements UserService {
          * Reset the login attempts & update record
          */
         user.setLoginAttempts(0);
-        userRepository.save(user);
 
         TokenRequest tokenRequest = TokenRequest.builder()
                 .username(user.getUsername())
                 .role(user.getUsername())
                 .build();
 
+        String ref = UUID.randomUUID().toString();
         // Generate JWT token
-        String token = jwtService.createJwtToken(tokenRequest);
+        String token = jwtService.createJwtToken(tokenRequest, ref);
 
         //Generate Refresh token
-        String refreshToken = jwtService.createRefreshToken(tokenRequest);
+        String refreshToken = jwtService.createRefreshToken(tokenRequest, ref);
 
         //Build login response
         AuthResponseDto authResponseDto = AuthResponseDto.builder()
                 .token(token)
                 .refreshToken(refreshToken)
                 .build();
+
+        user.setTokenReference(ref);
+        userRepository.save(user);
+
 
         return BaseDetailsResponse.<AuthResponseDto>builder()
                 .code(ResponseUtil.SUCCESS_CODE)
@@ -205,5 +241,16 @@ public class UserServiceImpl implements UserService {
                 .data(authResponseDto)
                 .build();
 
+    }
+
+    private User findUser(String username) {
+        User user = userRepository.findOneByUsername(username);
+
+        if (ObjectUtils.isEmpty(user)) {
+            log.error("User not found by given username {}", username);
+            throw new NullPointerException();
+        }
+        log.info("User found by given username {}", username);
+        return user;
     }
 }
