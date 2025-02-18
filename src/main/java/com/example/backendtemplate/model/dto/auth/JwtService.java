@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import java.io.Serializable;
 import java.time.ZoneId;
 import java.util.Date;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -25,10 +26,12 @@ public class JwtService implements Serializable {
     private final transient Algorithm getSecretKey;
 
 
-    public String createJwtToken(TokenRequest tokenRequest) {
+
+    public String createJwtToken(TokenRequest tokenRequest,String ref) {
         return JWT.create()
                 .withSubject(tokenRequest.getUsername())
                 .withClaim("role", tokenRequest.getRole())
+                .withClaim("ref", ref)
                 .withIssuedAt(Date.from(tokenRequest.getNow().atZone(ZoneId.systemDefault()).toInstant()))
                 .withIssuer("SPRING_BACKEND")
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getJwtTokenValidity() * 1000L))
@@ -59,10 +62,11 @@ public class JwtService implements Serializable {
         return false;
     }
 
-    public String createRefreshToken(TokenRequest tokenRequest) {
+    public String createRefreshToken(TokenRequest tokenRequest,String ref) {
         return JWT.create()
                 .withSubject(tokenRequest.getUsername())
                 .withClaim("role", tokenRequest.getRole())
+                .withClaim("ref", ref)
                 .withIssuedAt(Date.from(tokenRequest.getNow().atZone(ZoneId.systemDefault()).toInstant()))
                 .withIssuer("SPRING_BACKEND")
                 .withExpiresAt(new Date(System.currentTimeMillis() + jwtConfig.getJwtRefreshTokenValidity() * 1000L))

@@ -7,6 +7,7 @@ import com.example.backendtemplate.entities.user.User;
 import com.example.backendtemplate.enums.Status;
 import com.example.backendtemplate.exception.UserDisabledException;
 import com.example.backendtemplate.exception.UserNotFoundException;
+import com.example.backendtemplate.exception.UserSessionExpiredException;
 import com.example.backendtemplate.model.dto.auth.AuthUserDetailsService;
 import com.example.backendtemplate.model.dto.auth.TokenBlackListService;
 import com.example.backendtemplate.model.response.DefaultResponse;
@@ -15,6 +16,7 @@ import com.example.backendtemplate.util.ResponseUtil;
 import com.example.backendtemplate.util.constants.AppConstants;
 import com.example.backendtemplate.util.constants.LogMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.micrometer.common.util.StringUtils;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,8 +46,8 @@ import static com.example.backendtemplate.util.constants.AppConstants.MDC_UID_KE
 @RequiredArgsConstructor
 public class JwtRequestFilter extends OncePerRequestFilter {
 
-    private final Algorithm getSecretKey;
     private static final Logger logWriter = Logger.getLogger(AppConstants.APP_LOG);
+    private final Algorithm getSecretKey;
     private final AuthUserDetailsService authUserDetailsService;
     private final UserRepository userRepository;
     private final TokenBlackListService tokenBlackListService;
@@ -54,6 +56,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws IOException {
         String logPrefix = "JWTRequestFilter:[doFilterInternal] -> ";
         try {
+
             boolean refreshToken = skipRefreshToken(request);
 
             if (refreshToken) {
@@ -93,7 +96,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             logWriter.log(Level.WARNING, () -> logPrefix + "Exception: JWT verification failed");
             DefaultResponse defaultResponse = DefaultResponse.builder().code(ResponseUtil.JWT_TOKEN_VALIDATE_ERROR_CODE).title(ResponseUtil.FAILED).message(ResponseUtil.INVALID_CREDENTIAL).build();
             generateErrorResponse(response, defaultResponse);
-        } catch (Exception e) {
+        } catch (UserSessionExpiredException e){
+            logWriter.log(Level.WARNING, () -> logPrefix + "Exception: User already logged out");
+            DefaultResponse defaultResponse = DefaultResponse.builder().code(ResponseUtil.JWT_TOKEN_EXPIRED_ERROR_CODE).title(ResponseUtil.FAILED).message(ResponseUtil.USER_ALREADY_LOGGED_OUT).build();
+            generateErrorResponse(response, defaultResponse);
+        }catch (Exception e) {
             logWriter.log(Level.WARNING, e, () -> logPrefix + "Exception: " + e.getMessage());
 
             DefaultResponse defaultResponse = DefaultResponse.builder().code(ResponseUtil.JWT_TOKEN_VALIDATE_ERROR_CODE).title(ResponseUtil.FAILED).message(ResponseUtil.INVALID_CREDENTIAL).build();
@@ -153,9 +160,9 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             throw new UserDisabledException("User disabled");
         }
 
-        if (tokenBlackListService.isTokenExist(token.replace(AppConstants.BEARER, ""))) {
-            logWriter.log(Level.WARNING, () -> LogMessage.REQUEST_FILTER_PREFIX + "Token was blacklisted");
-            throw new TokenExpiredException("The token was expired", Instant.now());
+        if (StringUtils.isEmpty(user.getTokenReference())) {
+            logWriter.log(Level.WARNING, () -> LogMessage.REQUEST_FILTER_PREFIX + "User Already logged out.");
+            throw new UserSessionExpiredException("User Already logged out.");
         }
 
         request.setAttribute("user", user);

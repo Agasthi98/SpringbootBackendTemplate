@@ -29,10 +29,12 @@ public class User extends BaseEntity {
     private String fullName;
     private String phoneNumber;
     private String password;
+    @Builder.Default
     private int loginAttempts = 0;
     private String nic;
     @Builder.Default
     private String status = Status.ACTIVE.name();
+    private String tokenReference;
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "users_roles",
