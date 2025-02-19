@@ -15,4 +15,6 @@ public class MessageUtil {
     //Auth
     public static final String USER_REGISTRATION_SUCCESS_MSG = "User registration successful";
     public static final String USER_REGISTRATION_FAILED_MSG = "User registration failed!";
+    public static final String ACCESS_DENIED = "Access denied.!";
+
 }
