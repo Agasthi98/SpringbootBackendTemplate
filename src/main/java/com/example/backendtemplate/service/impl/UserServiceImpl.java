@@ -1,5 +1,6 @@
 package com.example.backendtemplate.service.impl;
 
+import com.example.backendtemplate.entities.user.Role;
 import com.example.backendtemplate.model.dto.auth.AuthResponseDto;
 import com.example.backendtemplate.model.dto.auth.JwtService;
 import com.example.backendtemplate.model.dto.auth.AuthUserDetailsService;
@@ -9,6 +10,7 @@ import com.example.backendtemplate.entities.user.User;
 import com.example.backendtemplate.model.request.user.UserRegistrationRequest;
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
 import com.example.backendtemplate.model.response.SignOutResponse;
+import com.example.backendtemplate.repository.RoleRepository;
 import com.example.backendtemplate.repository.UserRepository;
 import com.example.backendtemplate.service.UserService;
 import com.example.backendtemplate.util.MobileUtility;
@@ -39,6 +41,7 @@ public class UserServiceImpl implements UserService {
     private final AuthenticationManager authenticationManager;
     private final AuthUserDetailsService userDetailsService;
     private final JwtService jwtService;
+    private final RoleRepository roleRepository;
 
     @Override
     public BaseDetailsResponse<HashMap<String, Object>> userRegistration(UserRegistrationRequest userRegistrationRequest) {
@@ -144,7 +147,9 @@ public class UserServiceImpl implements UserService {
         log.info("Saving new user [start]");
 
         String fullName = userRegistrationRequest.getFirstName() + " " + userRegistrationRequest.getLastName();
-
+        //set default role
+        Role defaultRole = roleRepository.findById(1L)
+                .orElseThrow(() -> new RuntimeException("Default role not found"));
         User user = User.builder()
                 .username(userRegistrationRequest.getUsername())
                 .fullName(fullName)
@@ -153,6 +158,7 @@ public class UserServiceImpl implements UserService {
                 .phoneNumber(MobileUtility.formatNumber(userRegistrationRequest.getPhoneNumber()))
                 .build();
 
+        user.getRoles().add(defaultRole);
         userRepository.save(user);
 
         log.info("Saving new user [end]");
