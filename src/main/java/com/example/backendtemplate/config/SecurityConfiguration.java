@@ -40,8 +40,6 @@ public class SecurityConfiguration {
                                 .requestMatchers("/user/**").hasAuthority("APP_USER")
                                 .anyRequest().authenticated()
                 )
-
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.ALWAYS).maximumSessions(1).maxSessionsPreventsLogin(true))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class).build();
     }
 }
