@@ -102,7 +102,7 @@ public class UserServiceImpl implements UserService {
             final String username = userLoginRequest.getUsername();
             final String password = userLoginRequest.getPassword();
 
-            User user = findUser(username);
+            User user = findUser(username,true);
 
             UserSessionResponse sessionResponse = checkUserAlreadyLoggedIn(user);
 
@@ -135,7 +135,7 @@ public class UserServiceImpl implements UserService {
     public BaseDetailsResponse<SignOutResponse> signOut(String token) {
         log.info(LogMessage.USER + " Sign out" + " [start]");
         try {
-            User user = findUser(token);
+            User user = findUser(token,false);
 
             user.setTokenReference(null);
             userRepository.save(user);
@@ -239,7 +239,7 @@ public class UserServiceImpl implements UserService {
         user.setLoginAttempts(0);
 
         TokenRequest tokenRequest = TokenRequest.builder()
-                .username(user.getUserId())
+                .username(user.getUsername())
                 .role(user.getUsername())
                 .build();
 
@@ -271,8 +271,13 @@ public class UserServiceImpl implements UserService {
 
     }
 
-    private User findUser(String username) {
-        User user = userRepository.findOneByUsername(username);
+    private User findUser(String username, boolean isLogin) {
+        User user;
+        if (!isLogin) {
+            user = userRepository.findOneByUserId(username);
+        } else {
+            user = userRepository.findOneByUsername(username);
+        }
 
         if (ObjectUtils.isEmpty(user)) {
             log.error("User not found by given username {}", username);

@@ -40,7 +40,7 @@ public class UserController {
     }
     @PostMapping("/signout")
     public ResponseEntity<DefaultResponse> signOut(@RequestAttribute("user") User user){
-        BaseDetailsResponse<SignOutResponse> response = userService.signOut(user.getUsername());
+        BaseDetailsResponse<SignOutResponse> response = userService.signOut(user.getUserId());
         return ReturnResponseUtil.returnResponse(response);
     }
 }

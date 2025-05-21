@@ -46,6 +46,7 @@ public class AuthUserDetailsService implements UserDetailsService {
     private User getAppUserDetails(String username) {
         Collection<GrantedAuthority> grantedAuthoritiesList = new ArrayList<>();
         User user = userRepository.findOneByUsername(username);
+
         if (user != null) {
             Hibernate.initialize(user.getRoles());
             user.getRoles().forEach(role -> {
