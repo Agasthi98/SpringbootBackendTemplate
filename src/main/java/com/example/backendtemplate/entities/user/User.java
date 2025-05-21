@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 @Entity
@@ -44,7 +45,6 @@ public class User extends BaseEntity {
                     name = "role_id", referencedColumnName = "id"))
     @Builder.Default
     private Collection<Role> roles = new ArrayList<>();
-
 
     //authenticated user fields
     @Transient

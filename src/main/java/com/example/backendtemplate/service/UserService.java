@@ -10,8 +10,10 @@ import java.util.HashMap;
 
 public interface UserService {
 
-    BaseDetailsResponse<HashMap<String,Object>> userRegistration(UserRegistrationRequest userRegistrationRequest);
+    BaseDetailsResponse<HashMap<String, Object>> userRegistration(UserRegistrationRequest userRegistrationRequest);
+
     BaseDetailsResponse<AuthResponseDto> login(UserLoginRequest userLoginRequest);
+
     BaseDetailsResponse<SignOutResponse> signOut(String token);
 
 }

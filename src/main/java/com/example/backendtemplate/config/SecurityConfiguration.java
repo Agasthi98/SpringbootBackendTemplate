@@ -41,7 +41,7 @@ public class SecurityConfiguration {
                                 .anyRequest().authenticated()
                 )
 
-                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.ALWAYS).maximumSessions(1).maxSessionsPreventsLogin(true))
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class).build();
     }
 }

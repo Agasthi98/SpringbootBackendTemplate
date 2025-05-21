@@ -1,6 +1,7 @@
 package com.example.backendtemplate.service.impl;
 
 import com.example.backendtemplate.entities.user.Role;
+import com.example.backendtemplate.entities.user.UserSession;
 import com.example.backendtemplate.model.dto.auth.AuthResponseDto;
 import com.example.backendtemplate.model.dto.auth.JwtService;
 import com.example.backendtemplate.model.dto.auth.AuthUserDetailsService;
@@ -10,8 +11,10 @@ import com.example.backendtemplate.entities.user.User;
 import com.example.backendtemplate.model.request.user.UserRegistrationRequest;
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
 import com.example.backendtemplate.model.response.SignOutResponse;
+import com.example.backendtemplate.model.response.UserSessionResponse;
 import com.example.backendtemplate.repository.RoleRepository;
 import com.example.backendtemplate.repository.UserRepository;
+import com.example.backendtemplate.repository.UserSessionRepository;
 import com.example.backendtemplate.service.UserService;
 import com.example.backendtemplate.util.MobileUtility;
 import com.example.backendtemplate.util.ResponseUtil;
@@ -19,6 +22,7 @@ import com.example.backendtemplate.util.constants.LogMessage;
 import com.example.backendtemplate.util.constants.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,6 +34,7 @@ import org.springframework.util.ObjectUtils;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -42,6 +47,10 @@ public class UserServiceImpl implements UserService {
     private final AuthUserDetailsService userDetailsService;
     private final JwtService jwtService;
     private final RoleRepository roleRepository;
+    private final UserSessionRepository userSessionRepository;
+
+    @Value("${jwt.validity}")
+    private long jwtTokenValidity;
 
     @Override
     public BaseDetailsResponse<HashMap<String, Object>> userRegistration(UserRegistrationRequest userRegistrationRequest) {
@@ -95,6 +104,17 @@ public class UserServiceImpl implements UserService {
 
             User user = findUser(username);
 
+            UserSessionResponse sessionResponse = checkUserAlreadyLoggedIn(user);
+
+            if (!sessionResponse.isValid()) {
+                log.warn("Session response {}", sessionResponse.getMessage());
+                return BaseDetailsResponse.<AuthResponseDto>builder()
+                        .code(ResponseUtil.FAILED_CODE)
+                        .title(ResponseUtil.FAILED)
+                        .message(sessionResponse.getMessage())
+                        .build();
+            }
+
             return logUser(username, password, user);
 
 
@@ -128,7 +148,7 @@ public class UserServiceImpl implements UserService {
                     .data(SignOutResponse.builder().isSignOut(true).build())
                     .build();
 
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             log.error("{} sign out process with error: {}", LogMessage.USER, LogMessage.CAN_NOT_FIND_USER);
             return BaseDetailsResponse.<SignOutResponse>builder()
                     .code(ResponseUtil.FAILED_CODE)
@@ -136,7 +156,7 @@ public class UserServiceImpl implements UserService {
                     .message("Invalid Username")
                     .data(SignOutResponse.builder().isSignOut(false).build())
                     .build();
-        }catch (Exception e){
+        } catch (Exception e) {
             log.error(LogMessage.USER, e, " sign out" + " with error {}", e.getMessage());
             return null;
         }
@@ -219,7 +239,7 @@ public class UserServiceImpl implements UserService {
         user.setLoginAttempts(0);
 
         TokenRequest tokenRequest = TokenRequest.builder()
-                .username(user.getUsername())
+                .username(user.getUserId())
                 .role(user.getUsername())
                 .build();
 
@@ -239,6 +259,8 @@ public class UserServiceImpl implements UserService {
         user.setTokenReference(ref);
         userRepository.save(user);
 
+        //save user session
+        saveUserSession(user);
 
         return BaseDetailsResponse.<AuthResponseDto>builder()
                 .code(ResponseUtil.SUCCESS_CODE)
@@ -258,5 +280,54 @@ public class UserServiceImpl implements UserService {
         }
         log.info("User found by given username {}", username);
         return user;
+    }
+
+    private void saveUserSession(User user) {
+        long validityInMillis = jwtTokenValidity; // 30000
+        long validityInSeconds = validityInMillis / 1000;
+
+        UserSession session = userSessionRepository.findOneByUserId(user.getUserId());
+        if (ObjectUtils.isEmpty(session)) {
+            session = new UserSession();
+            session.setUserId(user.getUserId());
+        }
+        session.setCreatedAt(LocalDateTime.now());
+        session.setRevoked(false);
+        session.setExpiresAt(LocalDateTime.now().plus(Duration.ofMinutes(validityInSeconds)));
+        userSessionRepository.save(session);
+    }
+
+    private UserSessionResponse checkUserAlreadyLoggedIn(User userResponse) {
+        Optional<UserSession> userSession = userSessionRepository.findByUserId(userResponse.getUserId());
+
+        if (userSession.isPresent()) {
+            log.warn("user session not found for user {}", userResponse.getUserId());
+
+            if (userSession.get().isRevoked()) {
+                log.warn("user session is revoked for user {}", userResponse.getUserId());
+                return UserSessionResponse.builder()
+                        .isValid(false)
+                        .message("User session is revoked")
+                        .build();
+            } else if (!userSession.get().getExpiresAt().isBefore(LocalDateTime.now())) {
+                log.warn("user already logged in {}", userResponse.getUserId());
+                return UserSessionResponse.builder()
+                        .isValid(false)
+                        .message("User already logged in")
+                        .build();
+            } else {
+                log.info("user not logged in {}", userResponse.getUserId());
+                return UserSessionResponse.builder()
+                        .isValid(true)
+                        .message("User not logged in")
+                        .build();
+            }
+        } else {
+            log.info("user session not found for user {}", userResponse.getUserId());
+            return UserSessionResponse.builder()
+                    .isValid(true)
+                    .message("User session not found")
+                    .build();
+        }
     }
 }

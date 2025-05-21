@@ -58,4 +58,10 @@ public class ResponseUtil {
     public static final String USER_ALREADY_LOGGED_OUT = "User already logged out.";
     public static final String USER_ALREADY_LOGGED_IN_ANOTHER_DEVICE = "User already logged in another device..";
 
+    //Token checker
+    public static final String TOKEN_REVOKED = "Revoked token";
+    public static final String USER_ALREADY_LOGGED_IN = "User already logged in";
+    public static final String JWT_TOKEN_NOT_EXPIRE = "4005";
+
+
 }
