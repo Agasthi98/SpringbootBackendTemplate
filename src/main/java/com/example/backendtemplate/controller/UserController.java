@@ -24,8 +24,6 @@ import java.util.HashMap;
 public class UserController {
 
     private final UserService userService;
-    private final AuthenticationManager authenticationManager;
-    private final JwtService jwtService;
 
     @PostMapping("/register")
     public ResponseEntity<DefaultResponse> userRegistration(@Valid @RequestBody UserRegistrationRequest userRegistrationRequest) {
