@@ -313,8 +313,8 @@ public class UserServiceImpl implements UserService {
     private UserSessionResponse checkUserAlreadyLoggedIn(User userResponse, String fingerPrint) {
         Optional<UserSession> userSession = userSessionRepository.findByUserId(userResponse.getUserId());
 
-        if (userSession.isPresent()) {
-            log.warn("user session not found for user {}", userResponse.getUserId());
+        if (userSession.isPresent() && userSession.get().getFingerPrint() != null) {
+            log.warn("user session found for user {}", userResponse.getUserId());
 
             if (userSession.get().getFingerPrint().equals(fingerPrint) && !userSession.get().getExpiresAt().isBefore(LocalDateTime.now())) {
                 log.info("user session is alive for same device: {}", userSession.get().getFingerPrint());
@@ -348,7 +348,7 @@ public class UserServiceImpl implements UserService {
             log.info("user session not found for user {}", userResponse.getUserId());
             return UserSessionResponse.builder()
                     .isValid(true)
-                    .message("User session not found")
+                    .message("User session not found | fresh user")
                     .build();
         }
     }
