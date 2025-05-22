@@ -311,46 +311,43 @@ public class UserServiceImpl implements UserService {
     }
 
     private UserSessionResponse checkUserAlreadyLoggedIn(User userResponse, String fingerPrint) {
-        Optional<UserSession> userSession = userSessionRepository.findByUserId(userResponse.getUserId());
+        Optional<UserSession> optionalSession = userSessionRepository.findByUserId(userResponse.getUserId());
 
-        if (userSession.isPresent() && userSession.get().getFingerPrint() != null) {
-            log.warn("user session found for user {}", userResponse.getUserId());
-
-            if (userSession.get().getFingerPrint().equals(fingerPrint) && !userSession.get().getExpiresAt().isBefore(LocalDateTime.now())) {
-                log.info("user session is alive for same device: {}", userSession.get().getFingerPrint());
-
-                return UserSessionResponse.builder()
-                        .isValid(true)
-                        .message("User already logged in, can access same browser")
-                        .build();
-            }
-
-            if (userSession.get().isRevoked()) {
-                log.warn("user session is revoked for user {}", userResponse.getUserId());
-                return UserSessionResponse.builder()
-                        .isValid(false)
-                        .message("User session is revoked")
-                        .build();
-            } else if (!userSession.get().getExpiresAt().isBefore(LocalDateTime.now())) {
-                log.warn("user already logged in {}", userResponse.getUserId());
-                return UserSessionResponse.builder()
-                        .isValid(false)
-                        .message("User already logged in")
-                        .build();
-            } else {
-                log.info("user not logged in {}", userResponse.getUserId());
-                return UserSessionResponse.builder()
-                        .isValid(true)
-                        .message("User not logged in")
-                        .build();
-            }
-        } else {
-            log.info("user session not found for user {}", userResponse.getUserId());
-            return UserSessionResponse.builder()
-                    .isValid(true)
-                    .message("User session not found | fresh user")
-                    .build();
+        if (optionalSession.isEmpty()) {
+            log.info("User session not found for user {}", userResponse.getUserId());
+            return buildResponse(true, "User session not found | fresh user");
         }
+
+        UserSession session = optionalSession.get();
+        log.warn("User session found for user {}", userResponse.getUserId());
+
+        if (session.getFingerPrint() != null
+                && session.getFingerPrint().equals(fingerPrint)
+                && session.getExpiresAt().isAfter(LocalDateTime.now())) {
+            log.info("User session is alive for same device: {}", session.getFingerPrint());
+            return buildResponse(true, "User already logged in, can access same browser");
+        }
+
+        if (session.isRevoked()) {
+            log.warn("User session is revoked for user {}", userResponse.getUserId());
+            return buildResponse(false, "User session is revoked");
+        }
+
+        if (session.getExpiresAt().isAfter(LocalDateTime.now())) {
+            log.warn("User already logged in {}", userResponse.getUserId());
+            return buildResponse(false, "User already logged in");
+        }
+
+        log.info("User not logged in {}", userResponse.getUserId());
+        return buildResponse(true, "User not logged in");
+    }
+
+
+    private UserSessionResponse buildResponse(boolean isValid, String message) {
+        return UserSessionResponse.builder()
+                .isValid(isValid)
+                .message(message)
+                .build();
     }
 
     private UserSession getUserSession(String userId) {
