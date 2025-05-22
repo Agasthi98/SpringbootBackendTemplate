@@ -23,6 +23,7 @@ public class UserSession {
     private LocalDateTime expiresAt;
     @CreationTimestamp
     private LocalDateTime createdAt;
+    private String fingerPrint;
 
     public boolean isRevoked() {
         return revoked;

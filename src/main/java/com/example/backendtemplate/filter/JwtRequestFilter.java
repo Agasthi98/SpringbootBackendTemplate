@@ -97,7 +97,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
             generateErrorResponse(response, defaultResponse);
         } catch (UserSessionExpiredException e){
             logWriter.log(Level.WARNING, () -> logPrefix + "Exception: User already logged out");
-            DefaultResponse defaultResponse = DefaultResponse.builder().code(ResponseUtil.JWT_TOKEN_EXPIRED_ERROR_CODE).title(ResponseUtil.FAILED).message(ResponseUtil.USER_ALREADY_LOGGED_OUT).build();
+            DefaultResponse defaultResponse = DefaultResponse.error(ResponseUtil.FAILED, ResponseUtil.USER_ALREADY_LOGGED_OUT);
             generateErrorResponse(response, defaultResponse);
         }catch (Exception e) {
             logWriter.log(Level.WARNING, e, () -> logPrefix + "Exception: " + e.getMessage());

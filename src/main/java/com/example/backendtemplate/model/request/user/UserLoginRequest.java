@@ -11,4 +11,5 @@ public class UserLoginRequest {
     private String username;
     @NotEmpty(message = "password shouldn't be empty")
     private String password;
+    private String fingerPrint;
 }

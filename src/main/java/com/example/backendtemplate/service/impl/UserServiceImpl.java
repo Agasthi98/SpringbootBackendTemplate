@@ -102,9 +102,9 @@ public class UserServiceImpl implements UserService {
             final String username = userLoginRequest.getUsername();
             final String password = userLoginRequest.getPassword();
 
-            User user = findUser(username,true);
+            User user = findUser(username, true);
 
-            UserSessionResponse sessionResponse = checkUserAlreadyLoggedIn(user);
+            UserSessionResponse sessionResponse = checkUserAlreadyLoggedIn(user, userLoginRequest.getFingerPrint());
 
             if (!sessionResponse.isValid()) {
                 log.warn("Session response {}", sessionResponse.getMessage());
@@ -115,7 +115,7 @@ public class UserServiceImpl implements UserService {
                         .build();
             }
 
-            return logUser(username, password, user);
+            return logUser(username, password, user, userLoginRequest.getFingerPrint());
 
 
         } catch (NullPointerException e) {
@@ -135,16 +135,21 @@ public class UserServiceImpl implements UserService {
     public BaseDetailsResponse<SignOutResponse> signOut(String token) {
         log.info(LogMessage.USER + " Sign out" + " [start]");
         try {
-            User user = findUser(token,false);
+            User user = findUser(token, false);
 
+            UserSession session = getUserSession(user.getUserId());
+
+            session.setFingerPrint(null);
+            session.setRevoked(true);
             user.setTokenReference(null);
             userRepository.save(user);
+            userSessionRepository.save(session);
 
             log.info("{} Sign out [end]", LogMessage.USER);
             return BaseDetailsResponse.<SignOutResponse>builder()
                     .code(ResponseUtil.SUCCESS_CODE)
                     .title(ResponseUtil.SUCCESS)
-                    .message("Sign out successful")
+                    .message("Successfully logging out")
                     .data(SignOutResponse.builder().isSignOut(true).build())
                     .build();
 
@@ -185,7 +190,7 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    public BaseDetailsResponse<AuthResponseDto> logUser(String username, String password, User user) {
+    public BaseDetailsResponse<AuthResponseDto> logUser(String username, String password, User user, String fingerPrint) {
         LocalDateTime currentTime = LocalDateTime.now();
         LocalDateTime resetTime = user.getUpdatedDateTime().plusMinutes(5);
         Duration duration = Duration.between(currentTime, resetTime);
@@ -260,7 +265,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         //save user session
-        saveUserSession(user);
+        saveUserSession(user, fingerPrint);
 
         return BaseDetailsResponse.<AuthResponseDto>builder()
                 .code(ResponseUtil.SUCCESS_CODE)
@@ -287,26 +292,38 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    private void saveUserSession(User user) {
+    private void saveUserSession(User user, String fingerPrint) {
         long validityInMillis = jwtTokenValidity; // 30000
         long validityInSeconds = validityInMillis / 1000;
 
-        UserSession session = userSessionRepository.findOneByUserId(user.getUserId());
+        UserSession session = getUserSession(user.getUserId());
+
         if (ObjectUtils.isEmpty(session)) {
             session = new UserSession();
+            session.setFingerPrint(fingerPrint);
             session.setUserId(user.getUserId());
         }
         session.setCreatedAt(LocalDateTime.now());
         session.setRevoked(false);
+        session.setFingerPrint(fingerPrint);
         session.setExpiresAt(LocalDateTime.now().plus(Duration.ofMinutes(validityInSeconds)));
         userSessionRepository.save(session);
     }
 
-    private UserSessionResponse checkUserAlreadyLoggedIn(User userResponse) {
+    private UserSessionResponse checkUserAlreadyLoggedIn(User userResponse, String fingerPrint) {
         Optional<UserSession> userSession = userSessionRepository.findByUserId(userResponse.getUserId());
 
         if (userSession.isPresent()) {
             log.warn("user session not found for user {}", userResponse.getUserId());
+
+            if (userSession.get().getFingerPrint().equals(fingerPrint) && !userSession.get().getExpiresAt().isBefore(LocalDateTime.now())) {
+                log.info("user session is alive for same device: {}", userSession.get().getFingerPrint());
+
+                return UserSessionResponse.builder()
+                        .isValid(true)
+                        .message("User already logged in, can access same browser")
+                        .build();
+            }
 
             if (userSession.get().isRevoked()) {
                 log.warn("user session is revoked for user {}", userResponse.getUserId());
@@ -334,5 +351,14 @@ public class UserServiceImpl implements UserService {
                     .message("User session not found")
                     .build();
         }
+    }
+
+    private UserSession getUserSession(String userId) {
+        UserSession session = userSessionRepository.findOneByUserId(userId);
+        if (ObjectUtils.isEmpty(session)) {
+            log.warn("user session null");
+            throw new NullPointerException("cannot find user session");
+        }
+        return session;
     }
 }

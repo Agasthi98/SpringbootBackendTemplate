@@ -46,7 +46,7 @@ public class DefaultResponse {
     }
 
     public static DefaultResponse error(String title, String message) {
-        return new DefaultResponse(ResponseUtil.FAILED_CODE, title, message, new HashMap<String, Object>());
+        return new DefaultResponse(ResponseUtil.FAILED_CODE, title, message);
     }
 
     public static DefaultResponse internalServerError(String title, String message, Object data) {
