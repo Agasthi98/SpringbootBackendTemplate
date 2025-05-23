@@ -328,14 +328,20 @@ public class UserServiceImpl implements UserService {
             return buildResponse(true, "User already logged in, can access same browser");
         }
 
-        if (session.isRevoked()) {
+        if (session.isRevoked() && session.getFingerPrint() != null) {
             log.warn("User session is revoked for user {}", userResponse.getUserId());
             return buildResponse(false, "User session is revoked");
         }
 
         if (session.getExpiresAt().isAfter(LocalDateTime.now())) {
-            log.warn("User already logged in {}", userResponse.getUserId());
-            return buildResponse(false, "User already logged in");
+            log.warn("User already logged in | token revoked {}", userResponse.getUserId());
+            session.setRevoked(true);
+            session.setExpiresAt(LocalDateTime.now());
+            session.setFingerPrint(null);
+            userResponse.setTokenReference(null);
+            userRepository.save(userResponse);
+            userSessionRepository.save(session);
+            return buildResponse(false, "User already logged in | token revoked");
         }
 
         log.info("User not logged in {}", userResponse.getUserId());
