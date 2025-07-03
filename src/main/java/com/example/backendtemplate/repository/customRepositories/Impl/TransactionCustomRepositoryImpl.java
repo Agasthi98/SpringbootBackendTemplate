@@ -60,7 +60,7 @@ public class TransactionCustomRepositoryImpl implements TransactionCustomReposit
         query.setFirstResult((int) pageable.getOffset());
         query.setMaxResults(pageable.getPageSize());
 
-        // Count query
+        // Count a query
         CriteriaQuery<Long> countQuery = cb.createQuery(Long.class);
         Root<Transaction> countRoot = countQuery.from(Transaction.class);
         countQuery.select(cb.count(countRoot));
