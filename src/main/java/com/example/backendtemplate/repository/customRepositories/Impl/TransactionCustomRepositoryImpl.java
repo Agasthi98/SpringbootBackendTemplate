@@ -26,7 +26,7 @@ public class TransactionCustomRepositoryImpl implements TransactionCustomReposit
     private EntityManager entityManager;
 
     @Override
-    public Page<Transaction> searchTransactions(String type, Double minAmount, Double maxAmount, LocalDateTime startDate, LocalDateTime endDate, Pageable pageable) {
+    public Page<Transaction> searchTransactions(String type, Double minAmount, Double maxAmount, String dateType, Pageable pageable) {
         CriteriaBuilder cb = entityManager.getCriteriaBuilder();
 
         // Main query
@@ -45,6 +45,31 @@ public class TransactionCustomRepositoryImpl implements TransactionCustomReposit
         }
         if (maxAmount != null) {
             predicates.add(cb.lessThanOrEqualTo(root.get("amount"), maxAmount));
+        }
+
+        // Date filtering based on dateType
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startDate = null;
+        LocalDateTime endDate = now;
+        if (dateType != null) {
+            try {
+                FilterTypes filterType = FilterTypes.valueOf(dateType);
+                switch (filterType) {
+                    case LAST_7_DAYS:
+                        startDate = now.minusDays(7);
+                        break;
+                    case LAST_MONTHS:
+                        startDate = now.minusMonths(1).withDayOfMonth(1);
+                        break;
+                    case LAST_3_MONTHS:
+                        startDate = now.minusMonths(3).withDayOfMonth(1);
+                        break;
+                    default:
+                        break;
+                }
+            } catch (IllegalArgumentException e) {
+                // handle invalid dateType string if needed
+            }
         }
         if (startDate != null) {
             predicates.add(cb.greaterThanOrEqualTo(root.get("createdDateTime"), startDate));
@@ -68,6 +93,5 @@ public class TransactionCustomRepositoryImpl implements TransactionCustomReposit
         Long total = entityManager.createQuery(countQuery).getSingleResult();
 
         return new PageImpl<>(query.getResultList(), pageable, total);
-
     }
 }

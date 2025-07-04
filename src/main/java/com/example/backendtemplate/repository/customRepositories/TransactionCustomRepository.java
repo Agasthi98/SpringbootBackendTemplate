@@ -11,8 +11,7 @@ public interface TransactionCustomRepository {
             String type,
             Double minAmount,
             Double maxAmount,
-            LocalDateTime startDate,
-            LocalDateTime endDate,
+            String dateType,
             Pageable pageable
     );
 }
