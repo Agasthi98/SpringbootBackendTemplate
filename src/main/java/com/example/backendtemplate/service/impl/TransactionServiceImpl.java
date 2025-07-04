@@ -12,6 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import com.example.backendtemplate.entities.Transaction;
+import com.example.backendtemplate.enums.FilterTypes;
+import com.example.backendtemplate.enums.TranTypes;
 import com.example.backendtemplate.model.request.Transaction.TransactionRequest;
 
 @Service
@@ -42,12 +44,22 @@ public class TransactionServiceImpl implements TransactionService {
             } catch (Exception ignored) {}
         }
 
+        // Map type from full name to code if needed
+        String type = request.getType();
+        if (type != null) {
+            if (type.equals(FilterTypes.FT.name())) {
+                type = TranTypes.FUND_TRANSFER.name();
+            } else if (type.equals(FilterTypes.BP.name())) {
+                type = TranTypes.BILL_PAYMENT.name();
+            }
+        }
+
         // Date filters can be added here if needed (currently not in request)
         Page<Transaction> page = transactionRepository.searchTransactions(
-            request.getType() != null ? request.getType() : "",
+            type != null ? type : "",
             minAmount,
             maxAmount,
-            request.getDateType(), // <-- add this line
+            request.getDateType(),
             pageable
         );
 
@@ -69,8 +81,16 @@ public class TransactionServiceImpl implements TransactionService {
 
     @Override
     public BaseDetailsResponse<?> addTransaction(TransactionRequest request) {
+        String type = request.getType();
+        if (type != null) {
+            if (type.equalsIgnoreCase("fund transfer")) {
+                type = "FT";
+            } else if (type.equalsIgnoreCase("bill payment")) {
+                type = "BP";
+            }
+        }
         Transaction transaction = new Transaction();
-        transaction.setType(request.getType());
+        transaction.setType(type);
         transaction.setStatus(request.getStatus());
         transaction.setAmount(request.getAmount());
         transaction.setFee(request.getFee());

@@ -28,12 +28,12 @@ public class TransactionController {
         return ReturnResponseUtil.returnResponse(response);
     }
 
-    @PostMapping("/add")
+    @PostMapping("/add") 
     public ResponseEntity<DefaultResponse> addTransaction(@RequestBody TransactionRequest request) {
         BaseDetailsResponse<?> response = transactionService.addTransaction(request);
         return ReturnResponseUtil.returnResponse(response);
     }
 
-    //create a request to add a transaction
+    
     
 }
