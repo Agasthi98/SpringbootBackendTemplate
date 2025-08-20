@@ -9,6 +9,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.math.BigDecimal;
+
 @Entity
 @Setter
 @Getter
@@ -21,7 +23,7 @@ public class Transaction extends BaseEntity{
     private Long id;
     private String type;
     private String status;
-    private Double amount;
-    private String fee;
+    private BigDecimal amount;
+    private BigDecimal fee;
     private String description;
 }

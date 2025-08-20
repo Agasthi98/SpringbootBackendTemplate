@@ -34,10 +34,9 @@ public class TransactionCustomRepositoryImpl implements TransactionCustomReposit
         Root<Transaction> root = cq.from(Transaction.class);
         List<Predicate> predicates = new ArrayList<>();
 
-        if (type.isEmpty()) {
-            predicates.add(cb.equal(root.get(type), FilterTypes.ALL));
-        } else {
-            predicates.add(cb.equal(root.get(type), type));
+        // ✅ type filter (only if not null/empty)
+        if (type != null && !type.isEmpty()) {
+            predicates.add(cb.equal(root.get("type"), type));
         }
 
         if (minAmount != null) {
@@ -49,7 +48,7 @@ public class TransactionCustomRepositoryImpl implements TransactionCustomReposit
 
         // Date filtering based on dateType
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startDate = null;
+        LocalDateTime startDate = LocalDateTime.now();
         LocalDateTime endDate = now;
         if (dateType != null) {
             try {

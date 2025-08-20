@@ -8,7 +8,7 @@ import lombok.Setter;
 public class TransactionRequest {
     private String type;
     private String status;
-    private Double amount;
+    private String amount;
     private String fee;
     private String description;
 } 
