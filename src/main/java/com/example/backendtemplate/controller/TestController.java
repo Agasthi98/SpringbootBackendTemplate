@@ -33,5 +33,11 @@ public class TestController {
         return ReturnResponseUtil.returnResponse(response);
     }
 
+    @PostMapping("/hash-text")
+    public ResponseEntity<DefaultResponse> hashText(@RequestBody String text) {
+        BaseDetailsResponse<String> response = testService.hashText(text);
+        return ReturnResponseUtil.returnResponse(response);
+    }
+
 
 }
