@@ -8,6 +8,7 @@ import com.example.backendtemplate.util.ReturnResponseUtil;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,8 +21,11 @@ public class TestController {
     private final TestService testService;
 
     @PostMapping("/get-birthdate")
+    @PreAuthorize("hasAuthority('APP_USER')")
     public ResponseEntity<DefaultResponse> getBirthDate(@Valid @RequestBody NicRequest nicRequest) {
         BaseDetailsResponse<String> response = testService.getBirthDate(nicRequest.getNic());
         return ReturnResponseUtil.returnResponse(response);
     }
+
+
 }
