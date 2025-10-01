@@ -27,5 +27,11 @@ public class TestController {
         return ReturnResponseUtil.returnResponse(response);
     }
 
+    @PostMapping("/reverse")
+    public ResponseEntity<DefaultResponse> reverseString(@RequestBody String text) {
+        BaseDetailsResponse<String> response = testService.reverseString(text);
+        return ReturnResponseUtil.returnResponse(response);
+    }
+
 
 }
