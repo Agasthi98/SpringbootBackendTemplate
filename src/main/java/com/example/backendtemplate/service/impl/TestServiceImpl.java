@@ -2,6 +2,7 @@ package com.example.backendtemplate.service.impl;
 
 import com.example.backendtemplate.model.response.BaseDetailsResponse;
 import com.example.backendtemplate.service.TestService;
+import com.example.backendtemplate.util.CryptoUtils;
 import com.example.backendtemplate.util.NumberUtil;
 import com.example.backendtemplate.util.ResponseUtil;
 import com.example.backendtemplate.util.StringUtils;
@@ -32,5 +33,17 @@ public class TestServiceImpl implements TestService {
                 .message(ResponseUtil.SUCCESS)
                 .data(t)
                 .build();
+    }
+
+    @Override
+    public BaseDetailsResponse<String> hashText(String text) {
+        String r = CryptoUtils.hashOTP(text);
+        return BaseDetailsResponse.<String>builder()
+                .code(ResponseUtil.SUCCESS_CODE)
+                .title(ResponseUtil.SUCCESS)
+                .message(ResponseUtil.SUCCESS)
+                .data(r)
+                .build();
+
     }
 }
